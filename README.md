@@ -1,0 +1,12 @@
+node -v
+npm -v
+npm init -y
+npm init
+npm install express
+npm install --save-dev typescript ts-node @types/node @types/express nodemon
+npx tsc --init
+npm run dev
+npm install sequelize pg dotenv
+npm install --save-dev @types/sequelize  
+npm install --save-dev @types/validator
+npm install sequelize reflect-metadata sequelize-typescript
