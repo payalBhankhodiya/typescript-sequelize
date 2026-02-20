@@ -40,7 +40,7 @@ class LoggerDeviceData
 LoggerDeviceData.init(
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -118,5 +118,6 @@ LoggerDeviceData.belongsTo(Site, {
   foreignKey: "site_id",
   as: "site",
 });
+
 
 export default LoggerDeviceData;

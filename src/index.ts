@@ -1,6 +1,6 @@
 import express from "express";
 import sequelize from "./config/database.js";
-
+import adminRoutes from "./routes/admin.routes.js"
 import userRoutes from "./routes/user.routes.js";
 
 const app = express();
@@ -8,9 +8,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-
-
 // Register routes
+app.use("/api/admin", adminRoutes);
 app.use("/api/users", userRoutes);
 
 try {

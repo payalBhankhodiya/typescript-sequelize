@@ -28,6 +28,7 @@ class DeviceStatus
   public device_last_data!: object | null;
 
 
+  
 }
 
 DeviceStatus.init(

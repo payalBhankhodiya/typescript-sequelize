@@ -9,13 +9,12 @@ export interface UserAttributes {
   phone: string;
   first_name: string;
   last_name: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+ 
 }
 
 export interface UserCreationAttributes extends Optional<
   UserAttributes,
-  "id" | "createdAt" | "updatedAt"
+  "id" 
 > {}
 
 class User

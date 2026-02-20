@@ -3,8 +3,6 @@ import sequelize from "../config/database.js";
 import User from "./User.js";
 import Site from "./Site.js";
 
-
-
 interface DeviceAttributes {
   device_uuid: string;
   device_id: string;
@@ -15,14 +13,10 @@ interface DeviceAttributes {
   binded_at?: number | null;
 }
 
-interface DeviceCreationAttributes
-  extends Optional<
-
-    DeviceAttributes,
-    "device_uuid" | "binded" | "binded_to" | "binded_at"
-  > {}
-
-
+interface DeviceCreationAttributes extends Optional<
+  DeviceAttributes,
+  "device_uuid" | "binded" | "binded_to" | "binded_at"
+> {}
 
 class Device
   extends Model<DeviceAttributes, DeviceCreationAttributes>
@@ -35,11 +29,7 @@ class Device
   public binded!: boolean;
   public binded_to!: number | null;
   public binded_at!: number | null;
-
-
- }
-
-
+}
 
 Device.init(
   {
@@ -75,7 +65,7 @@ Device.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "users",       
+        model: "users",
         key: "id",
       },
       onUpdate: "CASCADE",
@@ -86,7 +76,7 @@ Device.init(
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: "sites",       
+        model: "sites",
         key: "site_id",
       },
       onUpdate: "CASCADE",
@@ -110,15 +100,13 @@ Device.init(
       checkBinding() {
         if (this.binded && (!this.binded_to || !this.binded_at)) {
           throw new Error(
-            "binded_to and binded_at are required when binded is true"
+            "binded_to and binded_at are required when binded is true",
           );
         }
       },
     },
-  }
+  },
 );
-
-
 
 Device.belongsTo(User, {
   foreignKey: "binded_to",
