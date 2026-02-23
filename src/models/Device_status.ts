@@ -26,15 +26,12 @@ class DeviceStatus
   public device_status!: "active" | "inactive";
   public device_last_seen!: Date | null;
   public device_last_data!: object | null;
-
-
-  
 }
 
 DeviceStatus.init(
   {
     id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -42,7 +39,7 @@ DeviceStatus.init(
     device_uuid: {
       type: DataTypes.UUID,
       allowNull: false,
-      unique: true, // One-to-one relationship
+      unique: true,
       references: {
         model: "devices",
         key: "device_uuid",
@@ -74,7 +71,7 @@ DeviceStatus.init(
     },
 
     device_last_data: {
-      type: DataTypes.JSONB, 
+      type: DataTypes.JSONB,
       allowNull: true,
     },
   },
@@ -102,3 +99,5 @@ Device.hasOne(DeviceStatus, {
 });
 
 export default DeviceStatus;
+
+

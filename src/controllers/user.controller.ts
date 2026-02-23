@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
+import sequelize from "../config/database.js";
+import Device from "../models/Device.js";
+import User from "../models/User.js";
 import Site from "../models/Site.js";
 import LoggerDeviceData from "../models/Logger_device_data.js";
 import DeviceStatus from "../models/Device_status.js";
-
 
 // CREATE SITE
 export const createSite = async (req: Request, res: Response) => {
@@ -25,7 +27,6 @@ export const getAllSites = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Failed to fetch sites" });
   }
 };
-
 
 // GET SITE BY ID
 export const getSiteById = async (req: Request, res: Response) => {
@@ -64,7 +65,9 @@ export const updateSite = async (req: Request, res: Response) => {
     }
 
     await site.update(req.body);
-    return res.status(200).json({ data: site });
+    return res
+      .status(200)
+      .json({ message: "Site updated successfully!", data: site });
   } catch (error) {
     return res.status(500).json({ error: "Failed to update site" });
   }
@@ -102,6 +105,27 @@ export const getAllDeviceData = async (req: Request, res: Response) => {
   }
 };
 
+// GET DEVICE DATA BY ID
+export const getDeviceDataById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid device ID" });
+    }
+
+    const deviceData = await LoggerDeviceData.findByPk(id);
+
+    if (!deviceData) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    return res.status(200).json({ data: deviceData });
+  } catch (error) {
+    return res.status(500).json({ error: "Error fetching device" });
+  }
+};
+
 // GET DEVICE STATUS
 export const getAllDeviceStatus = async (req: Request, res: Response) => {
   try {
@@ -112,3 +136,84 @@ export const getAllDeviceStatus = async (req: Request, res: Response) => {
   }
 };
 
+// GET DEVICE STATUS BY ID
+export const getDeviceStatusById = async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "Invalid device ID" });
+    }
+
+    const deviceStatus = await DeviceStatus.findByPk(id);
+
+    if (!deviceStatus) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    return res.status(200).json({ data: deviceStatus });
+  } catch (error) {
+    return res.status(500).json({ error: "Error fetching device" });
+  }
+};
+
+// binds device
+export const bindDevice = async (req: Request, res: Response) => {
+  const { user_id, device_id, site_id } = req.body;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const user = await User.findByPk(Number(user_id), { transaction });
+    if (!user) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const site = await Site.findOne({
+      where: { site_id: String(site_id) },
+      transaction,
+    });
+
+    if (!site) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Site not found" });
+    }
+
+    const device = await Device.findOne({
+      where: { device_id: String(device_id) },
+      transaction,
+    });
+
+    if (!device) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    if (device.binded) {
+      await transaction.rollback();
+      return res.status(400).json({ message: "Device already binded" });
+    }
+
+    device.binded = true;
+    device.binded_to = user_id;
+    device.binded_at = String(site_id);
+
+    await device.save({ transaction });
+
+    await transaction.commit();
+
+    return res.status(200).json({
+      message: "Device binded successfully",
+      device,
+    });
+  } catch (error: any) {
+    await transaction.rollback();
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};

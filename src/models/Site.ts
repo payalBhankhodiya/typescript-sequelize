@@ -3,33 +3,45 @@ import sequelize from "../config/database.js";
 import User from "./User.js";
 
 interface SiteAttributes {
+  id: number;
   site_uuid: string;
+  site_id: string;
   site_address: string;
   site_type: string;
   site_devices: string[];
-  site_owner: number; 
+  site_owner: number;
 }
 
 interface SiteCreationAttributes extends Optional<
   SiteAttributes,
-  "site_uuid" | "site_devices"
+  "id" | "site_uuid" | "site_devices"
 > {}
 
 class Site
   extends Model<SiteAttributes, SiteCreationAttributes>
   implements SiteAttributes
 {
+  public id!: number;
   public site_uuid!: string;
+  public site_id!: string;
   public site_address!: string;
   public site_type!: string;
   public site_devices!: string[];
   public site_owner!: number;
-
-
 }
 
 Site.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    site_id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
     site_uuid: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,

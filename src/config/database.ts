@@ -10,12 +10,11 @@ const dbHost = process.env.DB_HOST as string;
 const dbDriver = "postgres" as Dialect;
 const dbPort = Number(process.env.DB_PORT) || 5432;
 
-
 const sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   host: dbHost,
   port: dbPort,
   dialect: dbDriver,
-  logging: true,
+  logging: false,
 
   pool: {
     max: 5,

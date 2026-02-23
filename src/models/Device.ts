@@ -4,39 +4,47 @@ import User from "./User.js";
 import Site from "./Site.js";
 
 interface DeviceAttributes {
+  id: number;
   device_uuid: string;
   device_id: string;
   device_type: "logger" | "live" | "control";
   device_name: string;
   binded: boolean;
   binded_to?: number | null;
-  binded_at?: number | null;
+  binded_at?: string | null;
 }
 
 interface DeviceCreationAttributes extends Optional<
   DeviceAttributes,
-  "device_uuid" | "binded" | "binded_to" | "binded_at"
+  "id" | "device_uuid" | "binded" | "binded_to" | "binded_at"
 > {}
 
 class Device
   extends Model<DeviceAttributes, DeviceCreationAttributes>
   implements DeviceAttributes
 {
+  public id!: number;
   public device_uuid!: string;
   public device_id!: string;
   public device_type!: "logger" | "live" | "control";
   public device_name!: string;
   public binded!: boolean;
   public binded_to!: number | null;
-  public binded_at!: number | null;
+  public binded_at!: string | null;
 }
 
 Device.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     device_uuid: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+      allowNull: false,
+      unique: true,
     },
 
     device_id: {
@@ -73,7 +81,7 @@ Device.init(
     },
 
     binded_at: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: true,
       references: {
         model: "sites",

@@ -10,3 +10,7 @@ npm install sequelize pg dotenv
 npm install --save-dev @types/sequelize  
 npm install --save-dev @types/validator
 npm install sequelize reflect-metadata sequelize-typescript
+npm i bcrypt
+npm install --save-dev @types/bcrypt
+npm install jsonwebtoken
+npm install -D @types/jsonwebtoken

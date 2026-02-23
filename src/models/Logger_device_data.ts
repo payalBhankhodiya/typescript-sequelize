@@ -11,7 +11,7 @@ interface LoggerDeviceDataAttributes {
   device_id: string;
   raw_data: string;
   data: object;
-  site_id: number;
+  site_id: string;
 }
 
 interface LoggerDeviceDataCreationAttributes extends Optional<
@@ -30,7 +30,7 @@ class LoggerDeviceData
   public device_id!: string;
   public raw_data!: string;
   public data!: object;
-  public site_id!: number;
+  public site_id!: string;
 
 
 }
@@ -79,7 +79,7 @@ LoggerDeviceData.init(
     },
 
     site_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: "sites",

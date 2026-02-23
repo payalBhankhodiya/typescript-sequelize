@@ -5,16 +5,15 @@ import Site from "../models/Site.js";
 import DeviceStatus from "../models/Device_status.js";
 import LoggerDeviceData from "../models/Logger_device_data.js";
 
-
 // GET ALL DEVICES
 export const getAllDevices = async (req: Request, res: Response) => {
   try {
     const devices = await Device.findAll();
     return res.status(200).json({ data: devices });
-  } catch (error: any) {
+  } catch (error) {
     return res
       .status(500)
-      .json({ message: "Failed to fetch devices", error: error.message });
+      .json({ message: "Failed to fetch devices", details: error });
   }
 };
 
@@ -25,7 +24,9 @@ export const createDevice = async (req: Request, res: Response) => {
     return res.status(201).json({ data: device });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Failed to create device" });
+    return res
+      .status(500)
+      .json({ error: "Failed to create device", details: error });
   }
 };
 
@@ -46,7 +47,9 @@ export const getDeviceById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: device });
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching device" });
+    return res
+      .status(500)
+      .json({ error: "Error fetching device", details: error });
   }
 };
 
@@ -66,9 +69,13 @@ export const updateDevice = async (req: Request, res: Response) => {
     }
 
     await device.update(req.body);
-    return res.status(200).json({ data: device });
+    return res
+      .status(200)
+      .json({ message: "Device updated successfully!!", data: device });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to update device" });
+    return res
+      .status(500)
+      .json({ error: "Failed to update device", details: error });
   }
 };
 
@@ -90,7 +97,9 @@ export const deleteDevice = async (req: Request, res: Response) => {
     await device.destroy();
     return res.json({ message: "Device deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to delete device" });
+    return res
+      .status(500)
+      .json({ error: "Failed to delete device", details: error });
   }
 };
 
@@ -112,7 +121,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
     const users = await User.findAll();
     return res.status(200).json({ data: users });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch users" });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch users", details: error });
   }
 };
 
@@ -133,7 +144,9 @@ export const getUserById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: user });
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching user" });
+    return res
+      .status(500)
+      .json({ error: "Error fetching user", details: error });
   }
 };
 
@@ -153,9 +166,13 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     await user.update(req.body);
-    return res.status(200).json({ data: user });
+    return res
+      .status(200)
+      .json({ message: "User updated successfully!!", data: user });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to update user" });
+    return res
+      .status(500)
+      .json({ error: "Failed to update user", details: error });
   }
 };
 
@@ -177,10 +194,11 @@ export const deleteUser = async (req: Request, res: Response) => {
     await user.destroy();
     return res.json({ message: "User deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to delete user" });
+    return res
+      .status(500)
+      .json({ error: "Failed to delete user", details: error });
   }
 };
-
 
 // CREATE SITE
 export const createSite = async (req: Request, res: Response) => {
@@ -200,7 +218,9 @@ export const getAllSites = async (req: Request, res: Response) => {
     const sites = await Site.findAll();
     return res.status(200).json({ data: sites });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch sites" });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch sites", details: error });
   }
 };
 
@@ -221,7 +241,9 @@ export const getSiteById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: site });
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching site" });
+    return res
+      .status(500)
+      .json({ error: "Error fetching site", details: error });
   }
 };
 
@@ -241,9 +263,13 @@ export const updateSite = async (req: Request, res: Response) => {
     }
 
     await site.update(req.body);
-    return res.status(200).json({ data: site });
+    return res
+      .status(200)
+      .json({ message: "Site updated successfully!!", data: site });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to update site" });
+    return res
+      .status(500)
+      .json({ error: "Failed to update site", details: error });
   }
 };
 
@@ -265,7 +291,9 @@ export const deleteSite = async (req: Request, res: Response) => {
     await site.destroy();
     return res.json({ message: "Site deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to delete site" });
+    return res
+      .status(500)
+      .json({ error: "Failed to delete site", details: error });
   }
 };
 
@@ -275,7 +303,9 @@ export const getAllDeviceData = async (req: Request, res: Response) => {
     const data = await LoggerDeviceData.findAll();
     return res.status(200).json({ data: data });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch devices data" });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch devices data", details: error });
   }
 };
 
@@ -296,7 +326,9 @@ export const getDeviceDataById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: deviceData });
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching device" });
+    return res
+      .status(500)
+      .json({ error: "Error fetching device", details: error });
   }
 };
 
@@ -307,7 +339,9 @@ export const createDeviceData = async (req: Request, res: Response) => {
     return res.status(201).json({ data: deviceData });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Failed to create device's data" });
+    return res
+      .status(500)
+      .json({ error: "Failed to create device's data", details: error });
   }
 };
 
@@ -328,9 +362,11 @@ export const updateDeviceData = async (req: Request, res: Response) => {
     }
 
     await deviceData.update(req.body);
-    return res.status(200).json({ data: deviceData });
+    return res.status(200).json({  message: "Device data updated successfully!!", data: deviceData });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to update device data" });
+    return res
+      .status(500)
+      .json({ error: "Failed to update device data", details: error });
   }
 };
 
@@ -353,10 +389,11 @@ export const deleteDeviceData = async (req: Request, res: Response) => {
     await device.destroy();
     return res.json({ message: "Device's Data deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to delete device's data" });
+    return res
+      .status(500)
+      .json({ error: "Failed to delete device's data", details: error });
   }
 };
-
 
 // GET DEVICE STATUS
 export const getAllDeviceStatus = async (req: Request, res: Response) => {
@@ -364,7 +401,9 @@ export const getAllDeviceStatus = async (req: Request, res: Response) => {
     const data = await DeviceStatus.findAll();
     return res.status(200).json({ data: data });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch devices status" });
+    return res
+      .status(500)
+      .json({ error: "Failed to fetch devices status", details: error });
   }
 };
 
@@ -385,7 +424,22 @@ export const getDeviceStatusById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: deviceStatus });
   } catch (error) {
-    return res.status(500).json({ error: "Error fetching device" });
+    return res
+      .status(500)
+      .json({ error: "Error fetching device", details: error });
+  }
+};
+
+// CREATE DEVICE's DATA
+export const createDeviceStatus = async (req: Request, res: Response) => {
+  try {
+    const deviceStatus = await DeviceStatus.create(req.body);
+    return res.status(201).json({ data: deviceStatus });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ error: "Failed to create device's status", details: error });
   }
 };
 
@@ -406,9 +460,11 @@ export const updateDeviceStatus = async (req: Request, res: Response) => {
     }
 
     await deviceStatus.update(req.body);
-    return res.status(200).json({ data: deviceStatus });
+    return res.status(200).json({  message: "Device status updated successfully!!", data: deviceStatus });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to update device status" });
+    return res
+      .status(500)
+      .json({ error: "Failed to update device status", details: error });
   }
 };
 
@@ -431,6 +487,8 @@ export const deleteDeviceStatus = async (req: Request, res: Response) => {
     await deviceStatus.destroy();
     return res.json({ message: "Device's Status deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: "Failed to delete device's status" });
+    return res
+      .status(500)
+      .json({ error: "Failed to delete device's status", details: error });
   }
 };
