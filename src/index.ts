@@ -1,5 +1,6 @@
 import express from "express";
 import sequelize from "./config/database.js";
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -8,6 +9,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Register routes
 app.use("/api/auth", authRoutes);
@@ -26,3 +29,12 @@ try {
 } catch (error) {
   console.error("Database connection failed:", error);
 }
+
+// import cors from "cors";
+
+// app.use(
+//   cors({
+//     origin: process.env.PORT || 3000,
+//     credentials: true,
+//   }),
+// );

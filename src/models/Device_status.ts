@@ -99,5 +99,3 @@ Device.hasOne(DeviceStatus, {
 });
 
 export default DeviceStatus;
-
-

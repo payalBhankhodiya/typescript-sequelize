@@ -1,26 +1,25 @@
 import { DataTypes, Model, type Optional } from "sequelize";
 import sequelize from "../config/database.js";
+import bcrypt from "bcrypt";
 
 export interface UserAttributes {
   id: number;
   username: string;
   email: string;
   password: string;
+  role: "USER" | "ADMIN";
 }
 
-export interface UserCreationAttributes extends Optional<
-  UserAttributes,
-  "id"
-> {}
+export interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
 
-class LogUser
-  extends Model<UserAttributes, UserCreationAttributes>
+class LogUser extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
   public id!: number;
   public username!: string;
   public email!: string;
   public password!: string;
+  public role!: "USER" | "ADMIN";
 }
 
 LogUser.init(
@@ -35,41 +34,42 @@ LogUser.init(
       type: DataTypes.STRING(50),
       allowNull: false,
       unique: true,
-      validate: {
-        notEmpty: true,
-      },
+      validate: { notEmpty: true },
     },
 
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        isEmail: true,
-      },
+      validate: { isEmail: true },
     },
 
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+    },
+
+    role: {
+      type: DataTypes.ENUM("USER", "ADMIN"),
+      allowNull: false,
+      defaultValue: "USER",
     },
   },
   {
-    // hooks: {
-    //   beforeCreate: async (user) => {
-    //     user.password = await bcrypt.hash(user.password, 10);
-    //   },
-    // },
     sequelize,
     modelName: "LogUser",
     tableName: "log_users",
     timestamps: true,
-  },
-);
 
-// LogUser.prototype.validPassword = async function (password) {
-//   return await bcrypt.compare(password, this.password);
-// };
+    
+    hooks: {
+      beforeCreate: async (user: LogUser) => {
+        if (user.password) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+      },
+    },
+  }
+);
 
 export default LogUser;

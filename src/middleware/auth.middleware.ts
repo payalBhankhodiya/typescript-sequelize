@@ -1,48 +1,42 @@
 import type { Request, Response, NextFunction } from "express";
-import jwt, { type JwtPayload } from "jsonwebtoken";
-import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import LogUser from "../models/Log_user.js";
 
-dotenv.config();
-
-const secret = process.env.JWT_SECRET as string;
-
-if (!secret) {
-  throw new Error("JWT_SECRET is not defined in environment variables");
+interface AuthRequest extends Request {
+  user?: LogUser;
 }
 
-
-
-export interface AuthRequest extends Request {
-  user?: JwtPayload & {
-    userId: number;
-    email: string;
-  };
-}
-
-export const authMiddleware = (
+export const protect = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-): Response | void => {
+) => {
   try {
-    const token = req.cookies?.authcookie;
+    const token = req.cookies.token;
 
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized: No token provided" });
+      return res.status(401).json({ message: "Not authorized" });
     }
 
-    const decoded = jwt.verify(token, secret) as JwtPayload & {
-      userId: number;
-      email: string;
-    };
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as { id: number; role: string };
 
-    req.user = decoded;
+    const user = await LogUser.findByPk(decoded.id);
 
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
     next();
-  } catch (error: any) {
-    return res.status(401).json({
-      message: "Unauthorized: Invalid or expired token",
-      error: error.message,
-    });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
+
+
+
+
+

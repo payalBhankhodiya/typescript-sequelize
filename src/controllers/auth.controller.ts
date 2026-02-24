@@ -1,130 +1,82 @@
 import type { Request, Response } from "express";
-import jwt from "jsonwebtoken";
-
-import dotenv from "dotenv";
-import LogUser from "../models/Log_user.js";
 import bcrypt from "bcrypt";
+import LogUser from "../models/Log_user.js";
+import { sendTokenResponse } from "../utils/sendTokenResponse.js";
 
-dotenv.config();
-
-const secret = process.env.JWT_SECRET as string;
-
-if (!secret) {
-  throw new Error("JWT_SECRET is not defined in environment variables");
-}
-
-interface SignupBody {
-  username: string;
-  email: string;
-  password: string;
-}
-
-interface SigninBody {
-  email: string;
-  password: string;
-}
-
-export const signup = async (
-  req: Request<{}, {}, SignupBody>,
-  res: Response,
-): Promise<Response> => {
+export const signup = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
+
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const existingUser = await LogUser.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
     const user = await LogUser.create({
       username,
       email,
       password,
+      role: role && role.toUpperCase() === "ADMIN" ? "ADMIN" : "USER",
     });
 
-    const plainUser = user.toJSON();
-
-    return res.status(201).json({
-      message: "User registered successfully!",
-      user: {
-        id: plainUser.id,
-        username: plainUser.username,
-        email: plainUser.email,
-      },
-    });
+    return sendTokenResponse(user, res);
   } catch (error: any) {
     return res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
+      message: "Server error",
+      error: error.message || String(error),
     });
   }
 };
 
-export const signin = async (
-  req: Request<{}, {}, SigninBody>,
-  res: Response,
-): Promise<Response> => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password required" });
-  }
-
+export const signin = async (req: Request, res: Response) => {
   try {
-    const user = await LogUser.findOne({
-      where: { email: email.toLowerCase() },
-    });
+    const { email, password } = req.body;
 
-    if (!user || !user.password) {
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
+
+    const user = await LogUser.findOne({ where: { email } });
+
+    if (!user) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    if (!user.password) {
+      console.error("Fetched user from DB:", user.get());
+      return res
+        .status(500)
+        .json({ message: "Password not set for this user" });
+    }
 
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user.id, email: user.email }, secret, {
-      expiresIn: "24h",
-    });
-
-    res.cookie("authcookie", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
-    return res.status(200).json({
-      message: "Login successful",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
-    });
+    return sendTokenResponse(user, res);
   } catch (error: any) {
+    console.error("Signin error:", error);
     return res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
+      message: "Internal Server error",
+      error: error.message || String(error),
     });
   }
 };
 
-export const logout = async (
-  req: Request,
-  res: Response,
-): Promise<Response> => {
-  try {
-    res.clearCookie("authcookie", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+export const logout = async (_req: Request, res: Response) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
 
-    return res.status(200).json({
-      message: "Logout successful",
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
+  return res.status(200).json({
+    message: "Logged out successfully",
+  });
 };

@@ -3,6 +3,7 @@ import {
   bindDevice,
   createSite,
   deleteSite,
+  findDevice,
   getAllDeviceData,
   getAllDeviceStatus,
   getAllSites,
@@ -29,6 +30,10 @@ router.get("/device/data/:id", getDeviceDataById);
 router.get("/device/status", getAllDeviceStatus);
 router.get("/device/status/:id", getDeviceStatusById);
 
+// bind device
+router.post("/binds/device", bindDevice);
 
-router.post("/binds/device",bindDevice);
+// find device
+router.post("/find/device", findDevice);
+
 export default router;
