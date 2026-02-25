@@ -15,8 +15,10 @@ export const sendTokenResponse = (user: any, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   });
 
-  // Remove password from response
+  // convert in plain object
   const safeUser = { ...user.get() };
+
+  // Remove password from response
   delete safeUser.password;
 
   return res.status(200).json({

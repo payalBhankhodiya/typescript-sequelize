@@ -17,7 +17,8 @@ export const signup = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // ✅ Hash password manually (optional, hooks also handle it)
+    // Hash password manually 
+    // salt = 10
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await LogUser.create({
