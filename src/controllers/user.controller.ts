@@ -231,7 +231,10 @@ export const findDevice = async (req: Request, res: Response) => {
   const transaction = await sequelize.transaction();
 
   try {
-    // Device Find
+    if (!device_id) {
+      return res.status(400).json({ message: "device_id is required" });
+    }
+
     const device = await Device.findOne({
       where: { device_id },
       transaction,
@@ -242,58 +245,41 @@ export const findDevice = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Device not found" });
     }
 
-    // Check if device is binded
-    if (device.binded === false || device.binded_at === null) {
+    const deviceData = device.get({ plain: true });
+
+    // Correct validation
+    if (!deviceData.binded || !deviceData.binded_at) {
       await transaction.rollback();
-      console.log({
-        binded: device.binded,
-        binded_at: device.binded_at,
-      });
       return res.status(400).json({
         message: "Device is not binded to any site",
       });
     }
 
-    // Only LOGGER device logic
-    if (device.device_type === "logger") {
-      // Insert into logger_device_data
+    // LOGGER LOGIC
+    if (deviceData.device_type?.toLowerCase() === "logger") {
       await LoggerDeviceData.create(
         {
-          device_uuid: device.device_uuid,
-          device_id: device.device_id,
-          raw_data,
-          data,
-          site_id: device.binded_at,
+          device_uuid: deviceData.device_uuid,
+          device_id: deviceData.device_id,
+          raw_data: raw_data || null,
+          data: data || null,
+          site_id: deviceData.binded_at,
         },
         { transaction },
       );
+      console.log("Device data inserted");
 
-      // Update device_status
-      const [updated] = await DeviceStatus.update(
+      await DeviceStatus.upsert(
         {
+          device_uuid: deviceData.device_uuid,
+          device_id: deviceData.device_id,
           device_status: "active",
           device_last_seen: new Date(),
-          device_last_data: data,
+          device_last_data: data || null,
         },
-        {
-          where: { device_uuid: device.device_uuid },
-          transaction,
-        },
+        { transaction },
       );
-
-      // if status record not exist
-      if (!updated) {
-        await DeviceStatus.create(
-          {
-            device_uuid: device.device_uuid,
-            device_id: device.device_id,
-            device_status: "active",
-            device_last_seen: new Date(),
-            device_last_data: data,
-          },
-          { transaction },
-        );
-      }
+      console.log("Device status updated");
     }
 
     await transaction.commit();
@@ -303,7 +289,7 @@ export const findDevice = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     await transaction.rollback();
-    console.error(error);
+    console.error("ERROR:", error);
 
     return res.status(500).json({
       message: "Internal server error",
