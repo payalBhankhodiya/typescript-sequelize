@@ -1,5 +1,6 @@
 import { DataTypes, Model, type Optional } from "sequelize";
 import sequelize from "../config/database.js";
+import bcrypt from "bcrypt";
 
 export interface UserAttributes {
   id: number;
@@ -9,13 +10,15 @@ export interface UserAttributes {
   phone: string;
   first_name: string;
   last_name: string;
- 
+  role: "USER" | "ADMIN";
 }
 
-export interface UserCreationAttributes extends Optional<
+export interface UserCreationAttributes extends Optional <
   UserAttributes,
-  "id" 
+  "id"
 > {}
+
+
 
 class User
   extends Model<UserAttributes, UserCreationAttributes>
@@ -28,9 +31,7 @@ class User
   public phone!: string;
   public first_name!: string;
   public last_name!: string;
-
-  // public readonly createdAt!: Date;
-  // public readonly updatedAt!: Date;
+  public role!: "USER" | "ADMIN";
 }
 
 User.init(
@@ -79,12 +80,32 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    role: {
+      type: DataTypes.ENUM("USER", "ADMIN"),
+      allowNull: false,
+      defaultValue: "USER",
+    },
   },
   {
     sequelize,
     modelName: "User",
     tableName: "users",
     timestamps: true,
+
+    // Default: exclude password in queries
+    defaultScope: { attributes: { exclude: ["password"] } },
+
+    // Scope to include password when needed (signin)
+    scopes: { withPassword: { attributes: { include: ["password"] } } },
+
+    // Hook to hash password before creating user
+    hooks: {
+      beforeCreate: async (user: User) => {
+        if (user.password) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+      },
+    },
   },
 );
 

@@ -18,3 +18,5 @@ npm install  cookie-parser
 npm install --save-dev @types/cookie-parser
 npm i cors
 npm install -D @types/cors
+npm install morgan
+npm install -D @types/morgan

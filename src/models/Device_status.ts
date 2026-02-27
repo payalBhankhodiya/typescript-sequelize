@@ -30,6 +30,7 @@ class DeviceStatus
 
 DeviceStatus.init(
   {
+    
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

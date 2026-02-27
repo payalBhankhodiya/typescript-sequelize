@@ -1,6 +1,7 @@
 import express from "express";
 import sequelize from "./config/database.js";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(morgan('dev'));
+
 
 // Register routes
 app.use("/api/auth", authRoutes);

@@ -1,9 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import LogUser from "../models/Log_user.js";
+import User from "../models/User.js";
 
 interface AuthRequest extends Request {
-  user?: LogUser;
+  user?: User;
 }
 
 export const protect = async (
@@ -23,7 +23,7 @@ export const protect = async (
       process.env.JWT_SECRET as string
     ) as { id: number; role: string };
 
-    const user = await LogUser.findByPk(decoded.id);
+    const user = await User.findByPk(decoded.id);
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
