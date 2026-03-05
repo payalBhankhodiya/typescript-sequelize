@@ -5,490 +5,300 @@ import Site from "../models/Site.js";
 import DeviceStatus from "../models/Device_status.js";
 import LoggerDeviceData from "../models/Logger_device_data.js";
 
+import {
+  handleRequest,
+  validateId,
+  findOrFail,
+} from "../services/controllerService.js";
+
 // GET ALL DEVICES
-export const getAllDevices = async (req: Request, res: Response) => {
-  try {
+export const getAllDevices = handleRequest(
+  async (_: Request, res: Response) => {
     const devices = await Device.findAll();
-    return res.status(200).json({ data: devices });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Failed to fetch devices", details: error });
-  }
-};
+    res.status(200).json({ data: devices });
+  },
+);
 
 // CREATE DEVICE
-export const createDevice = async (req: Request, res: Response) => {
-  try {
+export const createDevice = handleRequest(
+  async (req: Request, res: Response) => {
     const device = await Device.create(req.body);
-    return res.status(201).json({ data: device });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json({ error: "Failed to create device", details: error });
-  }
-};
+    res.status(201).json({ data: device });
+  },
+);
 
 // GET DEVICE BY ID
-export const getDeviceById = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const getDeviceById = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
+    const device = await findOrFail(Device, id, "Device not found");
 
-    const device = await Device.findByPk(id);
-
-    if (!device) {
-      return res.status(404).json({ message: "Device not found" });
-    }
-
-    return res.status(200).json({ data: device });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error fetching device", details: error });
-  }
-};
+    res.status(200).json({ data: device });
+  },
+);
 
 // UPDATE DEVICE
-export const updateDevice = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const updateDevice = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
-
-    const device = await Device.findByPk(id);
-
-    if (!device) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    const device = await findOrFail(Device, id, "Device not found");
 
     await device.update(req.body);
-    return res
-      .status(200)
-      .json({ message: "Device updated successfully!!", data: device });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to update device", details: error });
-  }
-};
+
+    res.status(200).json({
+      message: "Device updated successfully",
+      data: device,
+    });
+  },
+);
 
 // DELETE DEVICE
-export const deleteDevice = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const deleteDevice = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
-
-    const device = await Device.findByPk(id);
-
-    if (!device) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    const device = await findOrFail(Device, id, "Device not found");
 
     await device.destroy();
-    return res.json({ message: "Device deleted successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to delete device", details: error });
-  }
-};
 
-// CREATE USER
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.create(req.body);
-    return res.status(201).json({ data: user });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to create user", details: error });
-  }
-};
+    res.json({
+      message: "Device deleted successfully",
+    });
+  },
+);
 
 // GET ALL USERS
-export const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await User.findAll();
-    return res.status(200).json({ data: users });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to fetch users", details: error });
-  }
-};
+export const getAllUsers = handleRequest(async (_: Request, res: Response) => {
+  const users = await User.findAll();
+  res.status(200).json({ data: users });
+});
+
+// CREATE USER
+export const createUser = handleRequest(async (req: Request, res: Response) => {
+  const user = await User.create(req.body);
+  res.status(201).json({ data: user });
+});
 
 // GET USER BY ID
-export const getUserById = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const getUserById = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+    const user = await findOrFail(User, id, "User not found");
 
-    const user = await User.findByPk(id);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    return res.status(200).json({ data: user });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error fetching user", details: error });
-  }
-};
+    res.status(200).json({ data: user });
+  },
+);
 
 // UPDATE USER
-export const updateUser = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const updateUser = handleRequest(async (req: Request, res: Response) => {
+  const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+  const user = await findOrFail(User, id, "User not found");
 
-    const user = await User.findByPk(id);
+  await user.update(req.body);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    await user.update(req.body);
-    return res
-      .status(200)
-      .json({ message: "User updated successfully!!", data: user });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to update user", details: error });
-  }
-};
+  res.status(200).json({
+    message: "User updated successfully",
+    data: user,
+  });
+});
 
 // DELETE USER
-export const deleteUser = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const deleteUser = handleRequest(async (req: Request, res: Response) => {
+  const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+  const user = await findOrFail(User, id, "User not found");
 
-    const user = await User.findByPk(id);
+  await user.destroy();
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    await user.destroy();
-    return res.json({ message: "User deleted successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to delete user", details: error });
-  }
-};
-
-// CREATE SITE
-export const createSite = async (req: Request, res: Response) => {
-  try {
-    const site = await Site.create(req.body);
-    return res.status(201).json({ data: site });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to create site", details: error });
-  }
-};
+  res.json({
+    message: "User deleted successfully",
+  });
+});
 
 // GET ALL SITES
-export const getAllSites = async (req: Request, res: Response) => {
-  try {
-    const sites = await Site.findAll();
-    return res.status(200).json({ data: sites });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to fetch sites", details: error });
-  }
-};
+export const getAllSites = handleRequest(async (_: Request, res: Response) => {
+  const sites = await Site.findAll();
+  res.status(200).json({ data: sites });
+});
+
+// CREATE SITE
+export const createSite = handleRequest(async (req: Request, res: Response) => {
+  const site = await Site.create(req.body);
+  res.status(201).json({ data: site });
+});
 
 // GET SITE BY ID
-export const getSiteById = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const getSiteById = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid site ID" });
-    }
+    const site = await findOrFail(Site, id, "Site not found");
 
-    const site = await Site.findByPk(id);
-
-    if (!site) {
-      return res.status(404).json({ message: "Site not found" });
-    }
-
-    return res.status(200).json({ data: site });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error fetching site", details: error });
-  }
-};
+    res.status(200).json({ data: site });
+  },
+);
 
 // UPDATE SITE
-export const updateSite = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const updateSite = handleRequest(async (req: Request, res: Response) => {
+  const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid site ID" });
-    }
+  const site = await findOrFail(Site, id, "Site not found");
 
-    const site = await Site.findByPk(id);
+  await site.update(req.body);
 
-    if (!site) {
-      return res.status(404).json({ message: "Site not found" });
-    }
-
-    await site.update(req.body);
-    return res
-      .status(200)
-      .json({ message: "Site updated successfully!!", data: site });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to update site", details: error });
-  }
-};
+  res.status(200).json({
+    message: "Site updated successfully",
+    data: site,
+  });
+});
 
 // DELETE SITE
-export const deleteSite = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const deleteSite = handleRequest(async (req: Request, res: Response) => {
+  const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid site ID" });
-    }
+  const site = await findOrFail(Site, id, "Site not found");
 
-    const site = await Site.findByPk(id);
+  await site.destroy();
 
-    if (!site) {
-      return res.status(404).json({ message: "Site not found" });
-    }
-
-    await site.destroy();
-    return res.json({ message: "Site deleted successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to delete site", details: error });
-  }
-};
+  res.json({
+    message: "Site deleted successfully",
+  });
+});
 
 // GET DEVICE DATA
-export const getAllDeviceData = async (req: Request, res: Response) => {
-  try {
+
+export const getAllDeviceData = handleRequest(
+  async (_: Request, res: Response) => {
     const data = await LoggerDeviceData.findAll();
-    return res.status(200).json({ data: data });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to fetch devices data", details: error });
-  }
-};
+    res.status(200).json({ data: data });
+  },
+);
 
 // GET DEVICE DATA BY ID
-export const getDeviceDataById = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
+export const getDeviceDataById = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    const deviceData = await LoggerDeviceData.findByPk(id);
+    const deviceData = await findOrFail(
+      LoggerDeviceData,
+      id,
+      "Device not found",
+    );
 
-    if (!deviceData) {
-      return res.status(404).json({ message: "Device not found" });
-    }
-
-    return res.status(200).json({ data: deviceData });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error fetching device", details: error });
-  }
-};
+    res.status(200).json({ data: deviceData });
+  },
+);
 
 // CREATE DEVICE's DATA
-export const createDeviceData = async (req: Request, res: Response) => {
-  try {
+
+export const createDeviceData = handleRequest(
+  async (req: Request, res: Response) => {
     const deviceData = await LoggerDeviceData.create(req.body);
-    return res.status(201).json({ data: deviceData });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json({ error: "Failed to create device's data", details: error });
-  }
-};
+    res.status(201).json({ data: deviceData });
+  },
+);
 
 // UPDATE DEVICE's DATA
 
-export const updateDeviceData = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const updateDeviceData = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
-
-    const deviceData = await LoggerDeviceData.findByPk(id);
-
-    if (!deviceData) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    const deviceData = await findOrFail(
+      LoggerDeviceData,
+      id,
+      "Device not found",
+    );
 
     await deviceData.update(req.body);
-    return res.status(200).json({  message: "Device data updated successfully!!", data: deviceData });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to update device data", details: error });
-  }
-};
+
+    res.status(200).json({
+      message: "Device's Data updated successfully",
+      data: deviceData,
+    });
+  },
+);
 
 // DELETE DEVICE's DATA
 
-export const deleteDeviceData = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const deleteDeviceData = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
-
-    const device = await LoggerDeviceData.findByPk(id);
-
-    if (!device) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    const device = await findOrFail(LoggerDeviceData, id, "Device not found");
 
     await device.destroy();
-    return res.json({ message: "Device's Data deleted successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to delete device's data", details: error });
-  }
-};
 
-// GET DEVICE STATUS
-export const getAllDeviceStatus = async (req: Request, res: Response) => {
-  try {
+    res.json({
+      message: "Device's Data deleted successfully",
+    });
+  },
+);
+
+// GET ALL DEVICE STATUS
+
+export const getAllDeviceStatus = handleRequest(
+  async (_: Request, res: Response) => {
     const data = await DeviceStatus.findAll();
-    return res.status(200).json({ data: data });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to fetch devices status", details: error });
-  }
-};
+    res.status(200).json({ data: data });
+  },
+);
 
 // GET DEVICE STATUS BY ID
-export const getDeviceStatusById = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
+export const getDeviceStatusById = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    const deviceStatus = await DeviceStatus.findByPk(id);
+    const deviceStatus = await findOrFail(DeviceStatus, id, "Device not found");
 
-    if (!deviceStatus) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    res.status(200).json({ data: deviceStatus });
+  },
+);
 
-    return res.status(200).json({ data: deviceStatus });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Error fetching device", details: error });
-  }
-};
+// CREATE DEVICE STATUS DATA
 
-// CREATE DEVICE's DATA
-export const createDeviceStatus = async (req: Request, res: Response) => {
-  try {
+export const createDeviceStatus = handleRequest(
+  async (req: Request, res: Response) => {
     const deviceStatus = await DeviceStatus.create(req.body);
-    return res.status(201).json({ data: deviceStatus });
-  } catch (error) {
-    console.log(error);
-    return res
-      .status(500)
-      .json({ error: "Failed to create device's status", details: error });
-  }
-};
+    res.status(201).json({ data: deviceStatus });
+  },
+);
 
 // UPDATE DEVICE's STATUS
 
-export const updateDeviceStatus = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const updateDeviceStatus = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
-
-    const deviceStatus = await DeviceStatus.findByPk(id);
-
-    if (!deviceStatus) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    const deviceStatus = await findOrFail(DeviceStatus, id, "Device not found");
 
     await deviceStatus.update(req.body);
-    return res.status(200).json({  message: "Device status updated successfully!!", data: deviceStatus });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to update device status", details: error });
-  }
-};
+
+    res.status(200).json({
+      message: "Device Status updated successfully",
+      data: deviceStatus,
+    });
+  },
+);
 
 // DELETE DEVICE's STATUS
 
-export const deleteDeviceStatus = async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
+export const deleteDeviceStatus = handleRequest(
+  async (req: Request, res: Response) => {
+    const id = validateId(req.params.id);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ message: "Invalid device ID" });
-    }
-
-    const deviceStatus = await DeviceStatus.findByPk(id);
-
-    if (!deviceStatus) {
-      return res.status(404).json({ message: "Device not found" });
-    }
+    const deviceStatus = await findOrFail(DeviceStatus, id, "Device not found");
 
     await deviceStatus.destroy();
-    return res.json({ message: "Device's Status deleted successfully" });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to delete device's status", details: error });
-  }
-};
+
+    res.json({
+      message: "Device's Status deleted successfully",
+    });
+  },
+);

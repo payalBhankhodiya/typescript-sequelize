@@ -13,6 +13,7 @@ export const protect = async (
 ) => {
   try {
     const token = req.cookies.token;
+    
 
     if (!token) {
       return res.status(401).json({ message: "Not authorized" });
