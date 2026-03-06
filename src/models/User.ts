@@ -99,15 +99,18 @@ User.init(
     scopes: { withPassword: { attributes: { include: ["password"] } } },
 
     // Hook to hash password before creating user
-    // hooks: {
-    //   beforeCreate: async (user: User) => {
-    //     if (user.password) {
-    //       user.password = await bcrypt.hash(user.password, 10);
-    //     }
-    //   },
-    // },
+    hooks: {
+      beforeCreate: async (user: User) => {
+        if (user.password) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
+
+      },
+    },
   },
 
 );
 
+
 export default User;
+
