@@ -1,5 +1,5 @@
 import { DataTypes, Model, type Optional } from "sequelize";
-import sequelize from "../config/database.js";
+import sequelize from "../db/connection.js";
 import Device from "./Device.js";
 
 interface DeviceStatusAttributes {
@@ -30,7 +30,6 @@ class DeviceStatus
 
 DeviceStatus.init(
   {
-    
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,

@@ -27,41 +27,43 @@ import {
   updateUser,
 } from "../controllers/admin.controller.js";
 
+import { protectAdmin } from "../middleware/auth.middleware.js";
+
 const router = Router();
 
 // Device
-router.get("/devices", getAllDevices);
-router.get("/devices/:id", getDeviceById);
-router.post("/devices", createDevice);
-router.put("/devices/:id", updateDevice);
-router.delete("/devices/:id", deleteDevice);
+router.get("/devices", protectAdmin, getAllDevices);
+router.get("/devices/:id", protectAdmin, getDeviceById);
+router.post("/devices", protectAdmin, createDevice);
+router.put("/devices/:id", protectAdmin, updateDevice);
+router.delete("/devices/:id", protectAdmin, deleteDevice);
 
 // User
-router.get("/users", getAllUsers);
-router.get("/users/:id", getUserById);
-router.post("/users", createUser);
-router.put("/users/:id", updateUser);
-router.delete("/users/:id", deleteUser);
+router.get("/users", protectAdmin, getAllUsers);
+router.get("/users/:id", protectAdmin, getUserById);
+router.post("/users", protectAdmin, createUser);
+router.put("/users/:id", protectAdmin, updateUser);
+router.delete("/users/:id", protectAdmin, deleteUser);
 
 // Site
-router.get("/sites", getAllSites);
-router.get("/sites/:id", getSiteById);
-router.post("/sites", createSite);
-router.put("/sites/:id", updateSite);
-router.delete("/sites/:id", deleteSite);
+router.get("/sites", protectAdmin, getAllSites);
+router.get("/sites/:id", protectAdmin, getSiteById);
+router.post("/sites", protectAdmin, createSite);
+router.put("/sites/:id", protectAdmin, updateSite);
+router.delete("/sites/:id", protectAdmin, deleteSite);
 
 // Device Data
-router.get("/device/data", getAllDeviceData);
-router.get("/device/data/:id", getDeviceDataById);
-router.post("/device/data", createDeviceData);
-router.put("/device/data/:id", updateDeviceData);
-router.delete("/device/data/:id", deleteDeviceData);
+router.get("/device/data", protectAdmin, getAllDeviceData);
+router.get("/device/data/:id", protectAdmin, getDeviceDataById);
+router.post("/device/data", protectAdmin, createDeviceData);
+router.put("/device/data/:id", protectAdmin, updateDeviceData);
+router.delete("/device/data/:id", protectAdmin, deleteDeviceData);
 
 // Device Status
-router.get("/device/status", getAllDeviceStatus);
-router.get("/device/status/:id", getDeviceStatusById);
-router.post("/device/status", createDeviceStatus);
-router.put("/device/status/:id", updateDeviceStatus);
-router.delete("/device/status/:id", deleteDeviceStatus);
+router.get("/device/status", protectAdmin, getAllDeviceStatus);
+router.get("/device/status/:id", protectAdmin, getDeviceStatusById);
+router.post("/device/status", protectAdmin, createDeviceStatus);
+router.put("/device/status/:id", protectAdmin, updateDeviceStatus);
+router.delete("/device/status/:id", protectAdmin, deleteDeviceStatus);
 
 export default router;

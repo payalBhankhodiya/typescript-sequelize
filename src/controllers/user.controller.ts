@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import sequelize from "../config/database.js";
+import sequelize from "../db/connection.js";
 import Device from "../models/Device.js";
 import User from "../models/User.js";
 import Site from "../models/Site.js";
@@ -15,7 +15,12 @@ import {
 
 // CREATE SITE
 export const createSite = handleRequest(async (req: Request, res: Response) => {
-  const site = await Site.create(req.body);
+  const site = await Site.create({
+    site_id: req.body.site_id,
+    site_address: req.body.site_address,
+    site_type: req.body.site_type,
+    site_owner: req.body.site_owner,
+  });
   res.status(201).json({ data: site });
 });
 

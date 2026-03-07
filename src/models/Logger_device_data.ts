@@ -1,9 +1,7 @@
 import { DataTypes, Model, type Optional } from "sequelize";
-import sequelize from "../config/database.js";
+import sequelize from "../db/connection.js";
 import Device from "./Device.js";
 import Site from "./Site.js";
-
-
 
 interface LoggerDeviceDataAttributes {
   id: number;
@@ -19,8 +17,6 @@ interface LoggerDeviceDataCreationAttributes extends Optional<
   "id"
 > {}
 
-
-
 class LoggerDeviceData
   extends Model<LoggerDeviceDataAttributes, LoggerDeviceDataCreationAttributes>
   implements LoggerDeviceDataAttributes
@@ -31,11 +27,7 @@ class LoggerDeviceData
   public raw_data!: string;
   public data!: object;
   public site_id!: string;
-
-
 }
-
-
 
 LoggerDeviceData.init(
   {
@@ -72,7 +64,6 @@ LoggerDeviceData.init(
       allowNull: false,
     },
 
-    
     data: {
       type: DataTypes.JSONB,
       allowNull: false,
@@ -102,8 +93,6 @@ LoggerDeviceData.init(
   },
 );
 
-
-
 LoggerDeviceData.belongsTo(Device, {
   foreignKey: "device_uuid",
   as: "deviceByUuid",
@@ -118,6 +107,5 @@ LoggerDeviceData.belongsTo(Site, {
   foreignKey: "site_id",
   as: "site",
 });
-
 
 export default LoggerDeviceData;

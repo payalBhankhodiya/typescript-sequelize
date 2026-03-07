@@ -22,7 +22,12 @@ export const getAllDevices = handleRequest(
 // CREATE DEVICE
 export const createDevice = handleRequest(
   async (req: Request, res: Response) => {
-    const device = await Device.create(req.body);
+    const device = await Device.create({
+      device_id: req.body.device_id,
+      device_type: req.body.device_type,
+      device_name: req.body.device_name,
+      binded: req.body.binded,
+    });
     res.status(201).json({ data: device });
   },
 );
@@ -77,7 +82,15 @@ export const getAllUsers = handleRequest(async (_: Request, res: Response) => {
 
 // CREATE USER
 export const createUser = handleRequest(async (req: Request, res: Response) => {
-  const user = await User.create(req.body);
+  const user = await User.create({
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    phone: req.body.phone,
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    role: req.body.role,
+  });
   res.status(201).json({ data: user });
 });
 
@@ -127,7 +140,12 @@ export const getAllSites = handleRequest(async (_: Request, res: Response) => {
 
 // CREATE SITE
 export const createSite = handleRequest(async (req: Request, res: Response) => {
-  const site = await Site.create(req.body);
+  const site = await Site.create({
+    site_id: req.body.site_id,
+    site_address: req.body.site_address,
+    site_type: req.body.site_type,
+    site_owner: req.body.site_owner,
+  });
   res.status(201).json({ data: site });
 });
 
@@ -198,7 +216,13 @@ export const getDeviceDataById = handleRequest(
 
 export const createDeviceData = handleRequest(
   async (req: Request, res: Response) => {
-    const deviceData = await LoggerDeviceData.create(req.body);
+    const deviceData = await LoggerDeviceData.create({
+      device_uuid: req.body.device_uuid,
+      device_id: req.body.device_id,
+      raw_data: req.body.raw_data,
+      data: req.body.data,
+      site_id: req.body.site_id,
+    });
     res.status(201).json({ data: deviceData });
   },
 );
@@ -265,7 +289,11 @@ export const getDeviceStatusById = handleRequest(
 
 export const createDeviceStatus = handleRequest(
   async (req: Request, res: Response) => {
-    const deviceStatus = await DeviceStatus.create(req.body);
+    const deviceStatus = await DeviceStatus.create({
+      device_uuid: req.body.device_uuid,
+      device_id: req.body.device_id,
+      device_status: req.body.device_status
+    });
     res.status(201).json({ data: deviceStatus });
   },
 );

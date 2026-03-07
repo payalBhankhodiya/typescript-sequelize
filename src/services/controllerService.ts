@@ -1,5 +1,5 @@
-import type{ Request, Response } from "express";
-import sequelize from "../config/database.js";
+import type { Request, Response } from "express";
+import sequelize from "../db/connection.js";
 
 export const handleRequest =
   (fn: Function) => async (req: Request, res: Response) => {

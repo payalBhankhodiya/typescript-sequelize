@@ -1,5 +1,5 @@
 import { DataTypes, Model, type Optional } from "sequelize";
-import sequelize from "../config/database.js";
+import sequelize from "../db/connection.js";
 import bcrypt from "bcrypt";
 
 export interface UserAttributes {
@@ -13,12 +13,10 @@ export interface UserAttributes {
   role: "USER" | "ADMIN";
 }
 
-export interface UserCreationAttributes extends Optional <
+export interface UserCreationAttributes extends Optional<
   UserAttributes,
   "id"
 > {}
-
-
 
 class User
   extends Model<UserAttributes, UserCreationAttributes>
@@ -101,16 +99,13 @@ User.init(
     // Hook to hash password before creating user
     hooks: {
       beforeCreate: async (user: User) => {
-        if (user.password) {
-          user.password = await bcrypt.hash(user.password, 10);
+        const userObj = user.toJSON();
+        if (userObj.password) {
+          user.dataValues.password = await bcrypt.hash(userObj.password, 10);
         }
-
       },
     },
   },
-
 );
 
-
 export default User;
-
