@@ -1,6 +1,7 @@
 import express from "express";
 import sequelize from "./db/connection.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import morgan from "morgan";
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors());
 app.use(morgan("dev"));
 
 // Register routes
@@ -31,12 +33,3 @@ try {
 } catch (error) {
   console.error("Database connection failed:", error);
 }
-
-// import cors from "cors";
-
-// app.use(
-//   cors({
-//     origin: process.env.PORT || 3000,
-//     credentials: true,
-//   }),
-// );
