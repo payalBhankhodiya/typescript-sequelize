@@ -109,3 +109,38 @@ LoggerDeviceData.belongsTo(Site, {
 });
 
 export default LoggerDeviceData;
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     LoggerDeviceData:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         device_uuid:
+ *           type: string
+ *           format: uuid
+ *           example: "550e8400-e29b-41d4-a716-446655440000"
+ *         device_id:
+ *           type: string
+ *           example: "DEV123456"
+ *         raw_data:
+ *           type: string
+ *           example: "temperature=25,humidity=60"
+ *         data:
+ *           type: object
+ *           example: { "temperature": 25, "humidity": 60 }
+ *         site_id:
+ *           type: string
+ *           example: "SITE001"
+ *       required:
+ *         - device_uuid
+ *         - device_id
+ *         - raw_data
+ *         - data
+ *         - site_id
+ */

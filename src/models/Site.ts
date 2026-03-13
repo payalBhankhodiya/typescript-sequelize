@@ -89,3 +89,43 @@ Site.belongsTo(User, {
 });
 
 export default Site;
+
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Site:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         site_uuid:
+ *           type: string
+ *           format: uuid
+ *           example: "550e8400-e29b-41d4-a716-446655440000"
+ *         site_id:
+ *           type: string
+ *           example: "SITE001"
+ *         site_address:
+ *           type: string
+ *           example: "123 Main Street, City, Country"
+ *         site_type:
+ *           type: string
+ *           example: "warehouse"
+ *         site_devices:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uuid
+ *           example: ["550e8400-e29b-41d4-a716-446655440001","550e8400-e29b-41d4-a716-446655440002"]
+ *         site_owner:
+ *           type: integer
+ *           example: 1
+ *       required:
+ *         - site_id
+ *         - site_address
+ *         - site_type
+ *         - site_owner
+ */

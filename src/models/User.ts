@@ -109,3 +109,42 @@ User.init(
 );
 
 export default User;
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         username:
+ *           type: string
+ *           example: abc
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: abc@example.com
+ *         phone:
+ *           type: string
+ *           example: "9876543210"
+ *         first_name:
+ *           type: string
+ *           example: abc
+ *         last_name:
+ *           type: string
+ *           example: xyz
+ *         role:
+ *           type: string
+ *           enum: [USER, ADMIN]
+ *           example: USER
+ *       required:
+ *         - username
+ *         - email
+ *         - phone
+ *         - first_name
+ *         - last_name
+ *         - role
+ */

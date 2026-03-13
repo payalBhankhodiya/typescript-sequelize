@@ -99,3 +99,38 @@ Device.hasOne(DeviceStatus, {
 });
 
 export default DeviceStatus;
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     DeviceStatus:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         device_uuid:
+ *           type: string
+ *           format: uuid
+ *           example: "550e8400-e29b-41d4-a716-446655440000"
+ *         device_id:
+ *           type: string
+ *           example: "DEV123456"
+ *         device_status:
+ *           type: string
+ *           enum: [active, inactive]
+ *           example: "active"
+ *         device_last_seen:
+ *           type: string
+ *           format: date-time
+ *           example: "2026-03-12T10:20:30Z"
+ *         device_last_data:
+ *           type: object
+ *           additionalProperties: true
+ *           example: { "temperature": 25, "humidity": 60 }
+ *       required:
+ *         - device_uuid
+ *         - device_id
+ *         - device_status
+ */

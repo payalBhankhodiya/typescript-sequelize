@@ -21,4 +21,6 @@ npm install -D @types/cors
 npm install morgan
 npm install -D @types/morgan
 npm install joi
+npm install swagger-ui-express swagger-jsdoc
+npm install -D @types/swagger-ui-express @types/swagger-jsdoc @types/yamljs
 

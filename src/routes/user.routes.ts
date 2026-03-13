@@ -39,3 +39,15 @@ router.post("/binds/device", protect, bindDevice);
 router.post("/find/device", protect, findDevice);
 
 export default router;
+
+
+
+
+
+
+
+
+
+
+
+

@@ -127,3 +127,44 @@ Device.belongsTo(Site, {
 });
 
 export default Device;
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Device:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           example: 1
+ *         device_uuid:
+ *           type: string
+ *           format: uuid
+ *           example: "550e8400-e29b-41d4-a716-446655440000"
+ *         device_id:
+ *           type: string
+ *           example: "DEV123456"
+ *         device_type:
+ *           type: string
+ *           enum: [logger, live, control]
+ *           example: "logger"
+ *         device_name:
+ *           type: string
+ *           example: "Temperature Sensor"
+ *         binded:
+ *           type: boolean
+ *           example: true
+ *         binded_to:
+ *           type: integer
+ *           nullable: true
+ *           example: 2
+ *         binded_at:
+ *           type: string
+ *           nullable: true
+ *           example: "SITE001"
+ *       required:
+ *         - device_id
+ *         - device_type
+ *         - device_name
+ */

@@ -67,3 +67,5 @@ router.put("/device/status/:id", protectAdmin, updateDeviceStatus);
 router.delete("/device/status/:id", protectAdmin, deleteDeviceStatus);
 
 export default router;
+
+

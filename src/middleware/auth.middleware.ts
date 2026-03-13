@@ -6,7 +6,6 @@ interface AuthRequest extends Request {
   user?: any;
 }
 
-
 export const protect = async (
   req: AuthRequest,
   res: Response,
@@ -23,6 +22,11 @@ export const protect = async (
       id: number;
       role: string;
     };
+    console.log(decoded)
+    console.log(decoded.id)
+    console.log(decoded.role)
+
+
 
     const user = await User.findByPk(decoded.id);
 
