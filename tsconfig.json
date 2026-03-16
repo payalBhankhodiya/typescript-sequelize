@@ -4,7 +4,7 @@
     // File Layout
     "rootDir": "./src",
     "resolveJsonModule": true,
-    "outDir": "./dist",     // typical output directory for compiled TS files
+    "outDir": "./dist", // typical output directory for compiled TS files
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
@@ -42,6 +42,9 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "esModuleInterop": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "jest.config.ts"]
 }

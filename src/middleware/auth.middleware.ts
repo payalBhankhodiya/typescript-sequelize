@@ -64,7 +64,7 @@ export const protectAdmin = async (
     }
     const userObj = user.toJSON();
     if (userObj.role !== "ADMIN") {
-      res.status(401).json({ message: "Not an admin" });
+      return res.status(401).json({ message: "Not an admin" });
     }
     req.user = userObj;
     next();

@@ -616,7 +616,10 @@ export const findDevice = handleRequest(async (req: Request, res: Response) => {
     }
   });
 
-  return res.status(200).json({
-    message: "Device data processed successfully",
-  });
+  return res
+    .status(200)
+    .json({
+      message: "Device data processed successfully",
+    })
+    .send("Device data processed successfully");
 });

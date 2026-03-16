@@ -16,4 +16,3 @@ router.post("/signin", validateRequest(loginSchema), signin);
 router.post("/logout", validateRequest(logoutSchema), logout);
 
 export default router;
-
