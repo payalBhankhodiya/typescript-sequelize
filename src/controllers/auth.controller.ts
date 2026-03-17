@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import { sendTokenResponse } from "../utils/jwt.js";
 import jwt from "jsonwebtoken";
+import logger from "../config/logger.js";
 
 /**
  * @swagger
@@ -24,11 +25,16 @@ export const signup = async (req: Request, res: Response) => {
       !last_name ||
       !role
     ) {
+      logger.warn("Signup validation failed", { body: req.body });
+
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const existingUser = await User.findOne({ where: { email } });
+
     if (existingUser) {
+      logger.warn("Signup attempt with existing email", { email });
+
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -42,12 +48,20 @@ export const signup = async (req: Request, res: Response) => {
       role: role && role.toUpperCase() === "ADMIN" ? "ADMIN" : "USER",
     });
 
+    logger.info("User registered successfully", {
+      userId: user.id,
+      email: user.email,
+    });
+
     return sendTokenResponse(user, res);
   } catch (error: any) {
-    console.error("Signup error:", error);
+    logger.error("Signup error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
     return res.status(500).json({
       message: "Server error",
-      error: error.message,
     });
   }
 };
@@ -140,42 +154,55 @@ export const signin = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      logger.warn("Signin validation failed", { email });
+
       return res
         .status(400)
         .json({ message: "Email and password are required" });
     }
 
-    // Fetch user WITH password explicitly
     const user = await User.scope("withPassword").findOne({ where: { email } });
 
-    console.log("USER:", user);
-
     if (!user) {
+      logger.warn("Signin failed - user not found", { email });
+
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Ensure password is available
     const hashedPassword = user.getDataValue("password");
-    console.log("hashedPassword : ", hashedPassword);
 
     if (!hashedPassword) {
-      console.error("Password missing in DB:", user.get({ plain: true }));
+      logger.error("Password missing in DB", {
+        user: user.get({ plain: true }),
+      });
+
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Compare password
     const isMatch = await bcrypt.compare(password, hashedPassword);
-    console.log(isMatch);
+
     if (!isMatch) {
+      logger.warn("Signin failed - wrong password", {
+        userId: user.id,
+      });
+
       return res.status(400).json({ message: "Invalid credentials" });
     }
+
+    logger.info("User logged in successfully", {
+      userId: user.id,
+      email: user.email,
+    });
 
     return sendTokenResponse(user, res);
   } catch (error: any) {
-    console.error("Signin error:", error);
+    logger.error("Signin error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
     return res.status(500).json({
       message: "Internal Server error",
-      error: error.message,
     });
   }
 };
@@ -251,35 +278,41 @@ export const signin = async (req: Request, res: Response) => {
 export const logout = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.token;
+
     if (!token) {
+      logger.warn("Logout attempted without token");
+
       return res.status(400).json({ message: "No token found" });
     }
 
-    // Decode token safely
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
       id: number;
       role: string;
     };
 
-    const userId = decoded.id;
-    const role = decoded.role;
-
-    // Clear cookie
     res.cookie("token", "", {
       httpOnly: true,
       expires: new Date(0),
     });
 
+    logger.info("User logged out", {
+      userId: decoded.id,
+      role: decoded.role,
+    });
+
     return res.status(200).json({
       message: `Logged out successfully`,
-      userId,
-      role,
+      userId: decoded.id,
+      role: decoded.role,
     });
   } catch (error: any) {
-    console.error("Logout error:", error);
+    logger.error("Logout error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
     return res.status(500).json({
       message: "Internal server error",
-      error: error.message,
     });
   }
 };

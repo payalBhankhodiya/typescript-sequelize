@@ -25,4 +25,5 @@ npm install swagger-ui-express swagger-jsdoc
 npm install -D @types/swagger-ui-express @types/swagger-jsdoc @types/yamljs
 npm install --save-dev typescript jest ts-jest @types/jest
 npm install -D jest ts-jest supertest @types/jest @types/supertest
-
+npm install winston
+npm install -D @types/winston typescript

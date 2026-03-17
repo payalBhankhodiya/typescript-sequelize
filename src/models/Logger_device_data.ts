@@ -10,12 +10,15 @@ interface LoggerDeviceDataAttributes {
   raw_data: string;
   data: object;
   site_id: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-interface LoggerDeviceDataCreationAttributes extends Optional<
-  LoggerDeviceDataAttributes,
-  "id"
-> {}
+interface LoggerDeviceDataCreationAttributes
+  extends Optional<
+    LoggerDeviceDataAttributes,
+    "id" | "createdAt" | "updatedAt"
+  > {}
 
 class LoggerDeviceData
   extends Model<LoggerDeviceDataAttributes, LoggerDeviceDataCreationAttributes>
@@ -27,6 +30,9 @@ class LoggerDeviceData
   public raw_data!: string;
   public data!: object;
   public site_id!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 }
 
 LoggerDeviceData.init(
@@ -109,7 +115,6 @@ LoggerDeviceData.belongsTo(Site, {
 });
 
 export default LoggerDeviceData;
-
 
 /**
  * @swagger

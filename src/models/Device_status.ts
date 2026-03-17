@@ -72,7 +72,7 @@ DeviceStatus.init(
 
     device_last_data: {
       type: DataTypes.JSONB,
-      allowNull: true,
+      allowNull: true, 
     },
   },
   {

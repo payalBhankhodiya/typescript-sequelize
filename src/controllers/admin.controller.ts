@@ -1,5 +1,6 @@
 import Device from "../models/Device.js";
 import type { Request, Response } from "express";
+import { Sequelize } from "sequelize";
 import User from "../models/User.js";
 import Site from "../models/Site.js";
 import DeviceStatus from "../models/Device_status.js";
@@ -92,13 +93,42 @@ export const getAllDevices = handleRequest(
 
 export const createDevice = handleRequest(
   async (req: Request, res: Response) => {
+    const {
+      device_id,
+      device_type,
+      device_name,
+      binded,
+      binded_to,
+      binded_at,
+    } = req.body;
+
     const device = await Device.create({
-      device_id: req.body.device_id,
-      device_type: req.body.device_type,
-      device_name: req.body.device_name,
-      binded: req.body.binded,
+      device_id,
+      device_type,
+      device_name,
+      binded: binded ?? false,
+      binded_to: binded_to ?? null,
+      binded_at: binded_at ?? null,
     });
-    res.status(201).json({ data: device });
+
+    const objDevice = device.toJSON();
+
+    if (objDevice.binded_at) {
+      await Site.update(
+        {
+          site_devices: Sequelize.fn(
+            "array_append",
+            Sequelize.col("site_devices"), 
+            objDevice.device_uuid,
+          ),
+        },
+        {
+          where: { site_id: objDevice.binded_at },
+        },
+      );
+    }
+
+    return res.status(201).json({ data: device });
   },
 );
 

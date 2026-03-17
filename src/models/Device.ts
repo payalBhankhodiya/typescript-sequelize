@@ -123,6 +123,7 @@ Device.belongsTo(User, {
 
 Device.belongsTo(Site, {
   foreignKey: "binded_at",
+  targetKey: "site_id",
   as: "site",
 });
 
