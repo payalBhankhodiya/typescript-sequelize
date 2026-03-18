@@ -1,41 +1,43 @@
-import { createLogger, format, transports, Logger } from 'winston';
+import { createLogger, format, transports, Logger } from "winston";
 
-const { combine, timestamp, errors, json, colorize, printf } = format;
+const { combine, timestamp, errors, json, printf } = format;
 
 const devFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${stack || message}`;
 });
 
 const logger: Logger = createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: process.env.LOG_LEVEL || "info",
 
   format: combine(
+    format.colorize(),
+    format.simple(),
     timestamp(),
     errors({ stack: true }),
-    process.env.NODE_ENV === 'production' ? json() : devFormat
+    process.env.NODE_ENV === "production" ? json() : devFormat,
   ),
 
-  defaultMeta: { service: 'my-app' },
+  defaultMeta: { service: "my-app" },
 
   transports: [
     new transports.Console(),
 
     new transports.File({
-      filename: '../logs/error.log',
-      level: 'error',
+      filename: "../logs/error.log",
+      level: "error",
     }),
 
     new transports.File({
-      filename: '../logs/combined.log',
+      filename: "../logs/combined.log",
     }),
   ],
 
   exceptionHandlers: [
-    new transports.File({ filename: '../logs/exceptions.log' }),
+    new transports.File({ filename: "../logs/exceptions.log" }),
   ],
 
   rejectionHandlers: [
-    new transports.File({ filename: '../logs/rejections.log' }),
+    new transports.File({ filename: "../logs/rejections.log" }),
   ],
 });
 

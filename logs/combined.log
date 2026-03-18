@@ -1,0 +1,111 @@
+2026-03-17T10:37:56.928Z [info]: Server started
+2026-03-17T10:37:56.929Z [warn]: Something might be wrong
+2026-03-17T10:37:56.929Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T10:37:57.188Z [info]: Database connected successfully
+2026-03-17T10:37:57.191Z [info]: Server running on http://localhost:9000
+2026-03-17T10:38:16.373Z [info]: User logged in successfully
+2026-03-17T10:38:16.379Z [info]: ::ffff:127.0.0.1 - - [17/Mar/2026:10:38:16 +0000] "POST /api/auth/signin HTTP/1.1" 200 264 "-" "bruno-runtime/3.1.4"
+2026-03-17T10:52:40.936Z [info]: Server started
+2026-03-17T10:52:40.937Z [warn]: Something might be wrong
+2026-03-17T10:52:40.937Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T10:52:41.146Z [info]: Database connected successfully
+2026-03-17T10:52:41.149Z [info]: Server running on http://localhost:9000
+2026-03-17T10:52:49.817Z [info]: User logged in successfully
+2026-03-17T10:52:49.822Z [info]: ::ffff:127.0.0.1 - - [17/Mar/2026:10:52:49 +0000] "POST /api/auth/signin HTTP/1.1" 200 264 "-" "bruno-runtime/3.1.4"
+2026-03-17T10:52:53.675Z [info]: User logged in successfully
+2026-03-17T10:52:53.677Z [info]: ::ffff:127.0.0.1 - - [17/Mar/2026:10:52:53 +0000] "POST /api/auth/signin HTTP/1.1" 200 264 "-" "bruno-runtime/3.1.4"
+2026-03-17T11:02:30.490Z [info]: Server started
+2026-03-17T11:02:30.491Z [warn]: Something might be wrong
+2026-03-17T11:02:30.491Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T11:02:30.729Z [info]: Database connected successfully
+2026-03-17T11:02:30.731Z [info]: Server running on http://localhost:9000
+2026-03-17T11:02:34.102Z [info]: Server started
+2026-03-17T11:02:34.103Z [warn]: Something might be wrong
+2026-03-17T11:02:34.104Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T11:02:34.321Z [info]: Database connected successfully
+2026-03-17T11:02:34.325Z [info]: Server running on http://localhost:9000
+2026-03-17T11:02:37.309Z [info]: Server started
+2026-03-17T11:02:37.310Z [warn]: Something might be wrong
+2026-03-17T11:02:37.311Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T11:02:37.514Z [info]: Database connected successfully
+2026-03-17T11:02:37.517Z [info]: Server running on http://localhost:9000
+2026-03-17T11:02:45.383Z [info]: Server started
+2026-03-17T11:02:45.384Z [warn]: Something might be wrong
+2026-03-17T11:02:45.385Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T11:02:45.603Z [info]: Database connected successfully
+2026-03-17T11:02:45.605Z [info]: Server running on http://localhost:9000
+2026-03-18T09:13:32.052Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:13:32.383Z [[32minfo[39m]: Database connected successfully
+2026-03-18T09:13:32.386Z [[32minfo[39m]: Server running on http://localhost:9000
+2026-03-18T09:13:38.440Z [[32minfo[39m]: ::1 - - [18/Mar/2026:09:13:38 +0000] "GET /api/admin/users HTTP/1.1" 200 655 "-" "bruno-runtime/3.1.4"
+2026-03-18T09:18:50.684Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:18:51.002Z [[32minfo[39m]: Database connected successfully
+2026-03-18T09:18:51.005Z [[32minfo[39m]: Server running on http://localhost:9000
+2026-03-18T09:18:53.943Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:18:54.177Z [[32minfo[39m]: Database connected successfully
+2026-03-18T09:18:54.180Z [[32minfo[39m]: Server running on http://localhost:9000
+2026-03-18T09:18:57.301Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:18:57.508Z [[32minfo[39m]: Database connected successfully
+2026-03-18T09:18:57.511Z [[32minfo[39m]: Server running on http://localhost:9000
+2026-03-18T09:19:02.013Z [[32minfo[39m]: ::1 - - [18/Mar/2026:09:19:02 +0000] "GET /api/admin/users HTTP/1.1" 200 655 "-" "bruno-runtime/3.1.4"
+2026-03-18T09:19:03.402Z [[32minfo[39m]: ::1 - - [18/Mar/2026:09:19:03 +0000] "GET /api/admin/users HTTP/1.1" 200 655 "-" "bruno-runtime/3.1.4"
+2026-03-18T09:20:42.693Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:20:42.935Z [[32minfo[39m]: Database connected successfully
+2026-03-18T09:20:42.938Z [[32minfo[39m]: Server running on http://localhost:9000
+2026-03-18T09:20:55.622Z [[32minfo[39m]: ::1 - - [18/Mar/2026:09:20:55 +0000] "GET /api/admin/devices HTTP/1.1" 200 1034 "-" "bruno-runtime/3.1.4"
+2026-03-18T09:21:13.059Z [[32minfo[39m]: ::1 - - [18/Mar/2026:09:21:13 +0000] "GET /api/admin/devices HTTP/1.1" 200 1034 "-" "bruno-runtime/3.1.4"

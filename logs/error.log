@@ -1,0 +1,54 @@
+2026-03-17T10:37:56.929Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-17T10:52:40.937Z [error]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:32:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:13:27.524Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:13:32.052Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:18:50.684Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:18:53.943Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:18:57.301Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:20:38.833Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-03-18T09:20:42.693Z [[31merror[39m]: Error: Test error
+    at file:///C:/Users/PC4/Desktop/typescript/src/app.ts:43:11
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:660:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
