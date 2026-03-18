@@ -9,6 +9,7 @@ import DeviceStatus from "../models/Device_status.js";
 import { Op, Sequelize } from "sequelize";
 import Site from "../models/Site.js";
 
+// logger device
 export const loggerDevice = handleRequest(
   async (req: Request, res: Response) => {
     const { device_id, device_uuid, raw_data, data, site_id } = req.body;
@@ -62,9 +63,40 @@ export const loggerDevice = handleRequest(
   },
 );
 
+// live device
 export const liveDeviceData = handleRequest(
   async (req: Request, res: Response) => {
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const { hour, createFrom, createTo } = req.query;
+
+    const where: any = {};
+
+    if (hour !== undefined) {
+      const hours = Number(hour);
+
+      if (Number.isNaN(hours) || hours < 0 || hours > 24 || !Number.isInteger(hours)) {
+        return res.status(400).json({
+          message: "hour must be an integer between 0 and 24",
+        });
+      }
+
+      const timeInHours = new Date(Date.now() - hours * 60 * 60 * 1000);
+
+      where.createdAt = {
+        [Op.gte]: timeInHours,
+      };
+    }
+
+    if (createFrom || createTo) {
+      where.createdAt = {};
+
+      if (createFrom) {
+        where.createdAt[Op.gte] = new Date(createFrom as string);
+      }
+
+      if (createTo) {
+        where.createdAt[Op.lte] = new Date(createTo as string);
+      }
+    }
 
     const attributes = [
       [Sequelize.literal(`(data->>'temperature')::float`), "temperature"],
@@ -80,11 +112,7 @@ export const liveDeviceData = handleRequest(
 
     const data = await LoggerDeviceData.findAll({
       attributes,
-      where: {
-        createdAt: {
-          [Op.gte]: oneHourAgo,
-        },
-      },
+      where,
       order: [["createdAt", "ASC"]],
       raw: true,
     });
@@ -92,7 +120,7 @@ export const liveDeviceData = handleRequest(
     return res.status(200).json({
       message: "Getting data successfully!!!",
       live: live || {},
-      data: data,
+      data,
     });
   },
 );
@@ -140,7 +168,7 @@ export const unbindDevice = handleRequest(
   },
 );
 
-// replace device 
+// replace device
 export const replaceDevice = handleRequest(
   async (req: Request, res: Response) => {
     const { old_device_uuid, new_device_uuid } = req.body;
