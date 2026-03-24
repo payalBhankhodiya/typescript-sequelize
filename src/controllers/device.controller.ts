@@ -73,7 +73,12 @@ export const liveDeviceData = handleRequest(
     if (hour !== undefined) {
       const hours = Number(hour);
 
-      if (Number.isNaN(hours) || hours < 0 || hours > 24 || !Number.isInteger(hours)) {
+      if (
+        Number.isNaN(hours) ||
+        hours < 0 ||
+        hours > 24 ||
+        !Number.isInteger(hours)
+      ) {
         return res.status(400).json({
           message: "hour must be an integer between 0 and 24",
         });
@@ -139,7 +144,7 @@ export const unbindDevice = handleRequest(
     const objDevice = device.toJSON();
 
     if (!objDevice.binded_at) {
-      return res.status(400).json({ message: "Device is already unbound" });
+      return res.status(400).json({ message: "Device is already unbind" });
     }
 
     const siteId = objDevice.binded_at;
@@ -164,7 +169,7 @@ export const unbindDevice = handleRequest(
       binded_at: null,
     });
 
-    return res.json({ message: "Device unbind successfully" });
+    return res.status(200).json({ message: "Device unbind successfully" });
   },
 );
 
@@ -265,7 +270,7 @@ export const replaceDevice = handleRequest(
       );
     });
 
-    return res.json({
+    return res.status(200).json({
       message: "Device replaced successfully",
     });
   },

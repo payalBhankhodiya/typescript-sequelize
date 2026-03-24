@@ -27,3 +27,5 @@ npm install --save-dev typescript jest ts-jest @types/jest
 npm install -D jest ts-jest supertest @types/jest @types/supertest
 npm install winston
 npm install -D @types/winston typescript
+npm install redis
+

@@ -5,6 +5,8 @@ import { sendTokenResponse } from "../utils/jwt.js";
 import jwt from "jsonwebtoken";
 import logger from "../config/logger.js";
 
+
+
 /**
  * @swagger
  * tags:
@@ -45,7 +47,7 @@ export const signup = async (req: Request, res: Response) => {
       phone,
       first_name,
       last_name,
-      role: role && role.toUpperCase() === "ADMIN" ? "ADMIN" : "USER",
+      role: role?.toUpperCase() === "ADMIN" ? "ADMIN" : "USER",
     });
 
     logger.info("User registered successfully", {
@@ -362,3 +364,7 @@ export const logout = async (req: Request, res: Response) => {
  *       500:
  *         description: Internal server error
  */
+
+
+
+

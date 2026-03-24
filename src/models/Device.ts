@@ -133,7 +133,8 @@ export default Device;
  * @swagger
  * components:
  *   schemas:
- *     Device:
+ *
+ *     DeviceBase:
  *       type: object
  *       properties:
  *         id:
@@ -155,17 +156,44 @@ export default Device;
  *           example: "Temperature Sensor"
  *         binded:
  *           type: boolean
- *           example: true
- *         binded_to:
- *           type: integer
- *           nullable: true
- *           example: 2
- *         binded_at:
- *           type: string
- *           nullable: true
- *           example: "SITE001"
- *       required:
- *         - device_id
- *         - device_type
- *         - device_name
+ *
+ *     DeviceUnbind:
+ *       allOf:
+ *         - $ref: '#/components/schemas/DeviceBase'
+ *         - type: object
+ *           properties:
+ *             binded:
+ *               type: boolean
+ *               example: false
+ *             binded_to:
+ *               type: integer
+ *               nullable: true
+ *               example: null
+ *             binded_at:
+ *               type: string
+ *               nullable: true
+ *               example: null
+ *
+ *     DeviceBinded:
+ *       allOf:
+ *         - $ref: '#/components/schemas/DeviceBase'
+ *         - type: object
+ *           required:
+ *             - binded_to
+ *             - binded_at
+ *           properties:
+ *             binded:
+ *               type: boolean
+ *               example: true
+ *             binded_to:
+ *               type: integer
+ *               example: 2
+ *             binded_at:
+ *               type: string
+ *               example: "SITE123"
+ *
+ *     Device:
+ *       oneOf:
+ *         - $ref: '#/components/schemas/DeviceUnbind'
+ *         - $ref: '#/components/schemas/DeviceBinded'
  */

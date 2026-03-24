@@ -56,7 +56,7 @@ export const getAllDevices = handleRequest(
  * @swagger
  * /api/admin/devices:
  *   post:
- *     summary: Create a new device
+ *     summary: Create a new device (with or without binding)
  *     tags: [Devices]
  *     requestBody:
  *       required: true
@@ -64,29 +64,86 @@ export const getAllDevices = handleRequest(
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - device_id
+ *               - device_type
+ *               - device_name
  *             properties:
  *               device_id:
  *                 type: string
- *                 example: DEV123456
  *               device_type:
  *                 type: string
- *                 example: sensor
+ *                 enum: [logger, live, control]
  *               device_name:
  *                 type: string
- *                 example: Temperature Sensor
  *               binded:
  *                 type: boolean
- *                 example: false
+ *               binded_to:
+ *                 type: integer
+ *                 nullable: true
+ *               binded_at:
+ *                 type: string
+ *                 nullable: true
+ *
+ *           examples:
+ *             withoutBinding:
+ *               summary: Without User Binding
+ *               value:
+ *                 device_id: DEV123456
+ *                 device_type: logger
+ *                 device_name: Temperature Sensor
+ *                 binded: false
+ *
+ *             withBinding:
+ *               summary: With User Binding
+ *               value:
+ *                 device_id: DEV789012
+ *                 device_type: logger
+ *                 device_name: Pressure Sensor
+ *                 binded: true
+ *                 binded_to: 2
+ *                 binded_at: SITE123
+ *
  *     responses:
  *       201:
- *         description: Device created successfully
+ *         description: Device created successfully (Binded or Unbind)
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 data:
- *                   $ref: '#/components/schemas/Device'
+ *                   oneOf:
+ *                     - $ref: '#/components/schemas/DeviceUnbind'
+ *                     - $ref: '#/components/schemas/DeviceBinded'
+ *
+ *             examples:
+ *               unbindResponse:
+ *                 summary: Device created without binding
+ *                 value:
+ *                   data:
+ *                     id: 1
+ *                     device_uuid: "550e8400-e29b-41d4-a716-446655440000"
+ *                     device_id: "DEV123456"
+ *                     device_type: "logger"
+ *                     device_name: "Temperature Sensor"
+ *                     binded: false
+ *                     binded_to: null
+ *                     binded_at: null
+ *
+ *               bindedResponse:
+ *                 summary: Device created with binding
+ *                 value:
+ *                   data:
+ *                     id: 2
+ *                     device_uuid: "550e8400-e29b-41d4-a716-446655440001"
+ *                     device_id: "DEV789012"
+ *                     device_type: "logger"
+ *                     device_name: "Pressure Sensor"
+ *                     binded: true
+ *                     binded_to: 2
+ *                     binded_at: "SITE123"
+ *
  *       500:
  *         description: Internal server error
  */
@@ -118,7 +175,7 @@ export const createDevice = handleRequest(
         {
           site_devices: Sequelize.fn(
             "array_append",
-            Sequelize.col("site_devices"), 
+            Sequelize.col("site_devices"),
             objDevice.device_uuid,
           ),
         },
@@ -313,6 +370,7 @@ export const deleteDevice = handleRequest(
 
 export const getAllUsers = handleRequest(async (_: Request, res: Response) => {
   const users = await User.findAll();
+
   res.status(200).json({ data: users });
 });
 
