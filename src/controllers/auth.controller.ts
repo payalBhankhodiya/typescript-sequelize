@@ -5,8 +5,6 @@ import { sendTokenResponse } from "../utils/jwt.js";
 import jwt from "jsonwebtoken";
 import logger from "../config/logger.js";
 
-
-
 /**
  * @swagger
  * tags:
@@ -168,17 +166,15 @@ export const signin = async (req: Request, res: Response) => {
     if (!user) {
       logger.warn("Signin failed - user not found", { email });
 
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const hashedPassword = user.getDataValue("password");
 
     if (!hashedPassword) {
-      logger.error("Password missing in DB", {
-        user: user.get({ plain: true }),
-      });
+      logger.error("Password missing in DB", { userId: user.id });
 
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, hashedPassword);
@@ -364,7 +360,4 @@ export const logout = async (req: Request, res: Response) => {
  *       500:
  *         description: Internal server error
  */
-
-
-
 
