@@ -361,3 +361,51 @@ export const logout = async (req: Request, res: Response) => {
  *         description: Internal server error
  */
 
+export const updatePassword = async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = (req as any).user.id;
+
+    if (!userId || !currentPassword || !newPassword) {
+      logger.warn("Updating password failed", { userId });
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const user = await User.scope("withPassword").findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const password = user.get("password") as string;
+
+    if (!password) {
+      logger.error("Password not fetched from DB", { userId });
+      return res.status(500).json({ message: "Password not available" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+   
+    await user.update({ password: hashedPassword });
+
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error: any) {
+    logger.error("Update password error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    return res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+};
