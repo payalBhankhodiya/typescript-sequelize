@@ -11,6 +11,8 @@ export interface UserAttributes {
   first_name: string;
   last_name: string;
   role: "USER" | "ADMIN";
+  resetToken?: string | null;
+  resetTokenExpiry?: Date | null;
 }
 
 export interface UserCreationAttributes extends Optional<
@@ -30,6 +32,8 @@ class User
   public first_name!: string;
   public last_name!: string;
   public role!: "USER" | "ADMIN";
+  public resetToken!: string | null;
+  public resetTokenExpiry!: Date | null;
 }
 
 User.init(
@@ -82,6 +86,15 @@ User.init(
       type: DataTypes.ENUM("USER", "ADMIN"),
       allowNull: false,
       defaultValue: "USER",
+    },
+    resetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    resetTokenExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
   {
