@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import { sendTokenResponse } from "../utils/jwt.js";
 import jwt from "jsonwebtoken";
 import logger from "../config/logger.js";
+import crypto from "crypto";
 
 /**
  * @swagger
@@ -394,12 +395,97 @@ export const updatePassword = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-   
     await user.update({ password: hashedPassword });
 
     return res.status(200).json({ message: "Password updated successfully" });
   } catch (error: any) {
     logger.error("Update password error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    return res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+};
+
+export const requestPasswordReset = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      logger.warn("email failed", { email });
+      return res.status(400).json({ message: "email field is required" });
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const expiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    await user.update({
+      resetToken: token,
+      resetTokenExpiry: expiry,
+    });
+
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+
+    res.json({
+      message: "Reset link generated",
+      resetLink, // for testing only
+    });
+  } catch (error: any) {
+    logger.error("Something went wrong", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    return res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    const user = await User.findOne({
+      where: {
+        resetToken: token,
+      },
+    });
+      
+     
+
+    if (!user || !user.dataValues.resetTokenExpiry) {
+      return res.status(400).json({ message: "Invalid token" });
+    }
+
+    if (user.dataValues.resetTokenExpiry < new Date()) {
+      return res.status(400).json({ message: "Token expired" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await user.update({
+      password: hashedPassword,
+      resetToken: null,
+      resetTokenExpiry: null,
+    });
+
+     const user2 = await User.scope("withPassword").findOne({
+      where: { password: hashedPassword },
+    });
+    console.log(user2?.dataValues)
+    res.json({ message: "Password reset successful" });
+  } catch (error: any) {
+    logger.error("Something went wrong", {
       message: error.message,
       stack: error.stack,
     });

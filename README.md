@@ -14,7 +14,7 @@ npm i bcrypt
 npm install --save-dev @types/bcrypt
 npm install jsonwebtoken
 npm install -D @types/jsonwebtoken
-npm install cookie-parser
+npm install  cookie-parser
 npm install --save-dev @types/cookie-parser
 npm i cors
 npm install -D @types/cors
@@ -31,3 +31,4 @@ npm install redis
 npm install sequelize pg pg-hstore
 npm install --save-dev sequelize-cli
 npx sequelize-cli init
+npm i crypto
