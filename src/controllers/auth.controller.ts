@@ -5,6 +5,10 @@ import { sendTokenResponse } from "../utils/jwt.js";
 import jwt from "jsonwebtoken";
 import logger from "../config/logger.js";
 import crypto from "crypto";
+import transporter from "../services/email.js";
+import { Op } from "sequelize";
+import dotenv from "dotenv";
+dotenv.config();
 
 /**
  * @swagger
@@ -367,9 +371,9 @@ export const updatePassword = async (req: Request, res: Response) => {
     const { currentPassword, newPassword } = req.body;
     const userId = (req as any).user.id;
 
-    if (!userId || !currentPassword || !newPassword) {
+    if (!currentPassword || !newPassword) {
       logger.warn("Updating password failed", { userId });
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "fields are required" });
     }
 
     const user = await User.scope("withPassword").findOne({
@@ -410,12 +414,13 @@ export const updatePassword = async (req: Request, res: Response) => {
   }
 };
 
+// Request password reset
 export const requestPasswordReset = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
 
     if (!email) {
-      logger.warn("email failed", { email });
+      logger.warn("email missing in request");
       return res.status(400).json({ message: "email field is required" });
     }
 
@@ -426,18 +431,30 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     }
 
     const token = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const expiry = new Date(Date.now() + 15 * 60 * 1000);
 
     await user.update({
-      resetToken: token,
+      resetToken: hashedToken,
       resetTokenExpiry: expiry,
     });
 
-    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
 
-    res.json({
-      message: "Reset link generated",
-      resetLink, // for testing only
+    await transporter.sendMail({
+      from: `"Support Team" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Password Reset Request",
+      html: `
+        <h3>Password Reset</h3>
+        <p>Click below link to reset your password:</p>
+        <a href="${resetLink}">${resetLink}</a>
+        <p>This link will expire in 15 minutes.</p>
+      `,
+    });
+
+    return res.json({
+      message: "Reset link sent to your email",
     });
   } catch (error: any) {
     logger.error("Something went wrong", {
@@ -446,29 +463,29 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     });
 
     return res.status(500).json({
-      message: "Internal Server error",
+      message: error.message,
     });
   }
 };
 
+// reset password
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, newPassword } = req.body;
 
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
     const user = await User.findOne({
       where: {
-        resetToken: token,
+        resetToken: hashedToken,
+        resetTokenExpiry: {
+          [Op.gt]: new Date(),
+        },
       },
     });
-      
-     
 
-    if (!user || !user.dataValues.resetTokenExpiry) {
-      return res.status(400).json({ message: "Invalid token" });
-    }
-
-    if (user.dataValues.resetTokenExpiry < new Date()) {
-      return res.status(400).json({ message: "Token expired" });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -479,11 +496,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       resetTokenExpiry: null,
     });
 
-     const user2 = await User.scope("withPassword").findOne({
-      where: { password: hashedPassword },
-    });
-    console.log(user2?.dataValues)
-    res.json({ message: "Password reset successful" });
+    return res.json({ message: "Password reset successful" });
   } catch (error: any) {
     logger.error("Something went wrong", {
       message: error.message,

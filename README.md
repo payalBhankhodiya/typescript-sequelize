@@ -32,3 +32,5 @@ npm install sequelize pg pg-hstore
 npm install --save-dev sequelize-cli
 npx sequelize-cli init
 npm i crypto
+npm i nodemailer 
+npm install --save-dev @types/nodemailer

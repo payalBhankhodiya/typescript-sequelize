@@ -5,8 +5,12 @@ import {
   registerSchema,
   loginSchema,
   logoutSchema,
+  resetPasswordSchema,
+  requestPasswordResetSchema,
+  updatePasswordSchema,
 } from "../validation/user.js";
-import { protect } from "../middleware/auth.middleware.js";
+
+
 
 const router = Router();
 
@@ -16,10 +20,10 @@ router.post("/signin", validateRequest(loginSchema), signin);
 
 router.post("/logout", validateRequest(logoutSchema), logout);
 
-router.post("/update-password", protect, updatePassword);
+router.post("/update-password", validateRequest(updatePasswordSchema), updatePassword);
 
-router.post("/request-reset", requestPasswordReset);
-router.post("/reset-password", resetPassword);
+router.post("/request-reset", validateRequest(requestPasswordResetSchema), requestPasswordReset);
+router.post("/reset-password", validateRequest(resetPasswordSchema), resetPassword);
 
 
 export default router;

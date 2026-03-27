@@ -1,5 +1,6 @@
 import Joi from "joi";
 
+
 export const registerSchema = Joi.object({
   username: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -20,4 +21,20 @@ export const logoutSchema = Joi.object({
     'string.base': 'Token must be a string',
     'any.required': 'Token is required for logout',
   }),
+});
+
+export const updatePasswordSchema = Joi.object({
+  newPassword: Joi.string().min(8).required(),
+})
+
+export const requestPasswordResetSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+  
+
+export const resetPasswordSchema = Joi.object({
+  newPassword: Joi.string().min(8).required(),
+  token: Joi.string().required().messages({
+    'string.base': 'Token must be a string'
+  })
 });
