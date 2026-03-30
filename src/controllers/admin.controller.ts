@@ -11,6 +11,7 @@ import {
   validateId,
   findOrFail,
 } from "../services/controllerService.js";
+import { getUsers } from "../services/userService.js";
 
 /**
  * @swagger
@@ -369,11 +370,17 @@ export const deleteDevice = handleRequest(
  */
 
 export const getAllUsers = handleRequest(async (_: Request, res: Response) => {
-  const users = await User.findAll();
-
+  const users = await getUsers();
   res.status(200).json({ data: users });
 });
-
+// export const getAllUsers = async (req: Request, res: Response) => {
+//   try {
+//     const users = await getUsers();
+//     res.json(users);
+//   } catch (error: any) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 // CREATE USER
 
 /**
