@@ -43,6 +43,8 @@ export const signup = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+
     const user = await User.create({
       username,
       email,
@@ -51,11 +53,30 @@ export const signup = async (req: Request, res: Response) => {
       first_name,
       last_name,
       role: role?.toUpperCase() === "ADMIN" ? "ADMIN" : "USER",
+      verificationToken,
+      verificationTokenExpiry: new Date(Date.now() + 15 * 60 * 1000),
+      isVerified: false,
     });
 
-    logger.info("User registered successfully", {
+    const verifyLink = `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
+
+    await transporter.sendMail({
+      to: user.dataValues.email,
+      subject: "Verify your email",
+      html: `
+        <h3>Email Verification</h3>
+        <p>Click below link to verify your email:</p>
+        <a href="${verifyLink}">${verifyLink}</a>
+      `,
+    });
+
+    logger.info("User registered, verification email sent", {
       userId: user.id,
       email: user.email,
+    });
+
+    res.status(201).json({
+      message: "Signup successful. Please verify your email.",
     });
 
     return sendTokenResponse(user, res);
@@ -66,7 +87,7 @@ export const signup = async (req: Request, res: Response) => {
     });
 
     return res.status(500).json({
-      message: "Server error",
+      message: "Internal Server error",
     });
   }
 };
@@ -153,6 +174,42 @@ export const signup = async (req: Request, res: Response) => {
  *       500:
  *         description: Internal server error
  */
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.body;
+
+    const user = await User.findOne({
+      where: {
+        verificationToken: token,
+        verificationTokenExpiry: {
+          [Op.gt]: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Unverified or expired token" });
+    }
+
+    await user.update({
+      isVerified: true,
+      verificationToken: null,
+      verificationTokenExpiry: null,
+    });
+
+    return res.send("Email verified successfully ✅");
+  } catch (error: any) {
+    logger.error("Signin error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    return res.status(500).json({
+      message: "Internal Server error",
+    });
+  }
+};
 
 export const signin = async (req: Request, res: Response) => {
   try {

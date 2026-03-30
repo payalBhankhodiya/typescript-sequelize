@@ -13,6 +13,9 @@ export interface UserAttributes {
   role: "USER" | "ADMIN";
   resetToken?: string | null;
   resetTokenExpiry?: Date | null;
+  verificationToken?: string | null;
+  verificationTokenExpiry?: Date | null;
+  isVerified?: boolean;
 }
 
 export interface UserCreationAttributes extends Optional<
@@ -34,6 +37,9 @@ class User
   public role!: "USER" | "ADMIN";
   public resetToken!: string | null;
   public resetTokenExpiry!: Date | null;
+  public verificationToken!: string | null;
+  public verificationTokenExpiry!: Date | null;
+  public isVerified!: boolean;
 }
 
 User.init(
@@ -95,6 +101,20 @@ User.init(
     resetTokenExpiry: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+    verificationToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+
+    verificationTokenExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
   },
   {

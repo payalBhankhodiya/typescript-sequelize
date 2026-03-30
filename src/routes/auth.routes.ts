@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { logout, requestPasswordReset, resetPassword, signin, signup, updatePassword } from "../controllers/auth.controller.js";
+import { logout, requestPasswordReset, resetPassword, signin, signup, updatePassword, verifyEmail } from "../controllers/auth.controller.js";
 import validateRequest from "../middleware/validateRequest.js";
 import {
   registerSchema,
@@ -15,6 +15,7 @@ import {
 const router = Router();
 
 router.post("/signup", validateRequest(registerSchema), signup);
+router.post("/verify-user", verifyEmail);
 
 router.post("/signin", validateRequest(loginSchema), signin);
 
