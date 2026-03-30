@@ -9,9 +9,7 @@ const envSchema = Joi.object({
   DB_PORT: Joi.number().required(),
   DB_USER: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
-  DB_TYPE: Joi.string()
-    .valid("mysql", "postgres", "sqlite", "mariadb", "mssql")
-    .required(),
+  DB_TYPE: Joi.string().valid("postgres").required(),
   DB_NAME: Joi.string().required(),
   JWT_SECRET: Joi.string().required(),
   NODE_ENV: Joi.string().required(),
@@ -31,5 +29,3 @@ export const dbConfig = {
   username: process.env.DB_USER as string,
   password: process.env.DB_PASSWORD as string,
 };
-
-
