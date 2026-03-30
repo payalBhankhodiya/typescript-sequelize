@@ -16,6 +16,98 @@ dotenv.config();
  *   name: Auth
  *   description: Authentication APIs
  */
+
+// signup
+
+/**
+ * @swagger
+ * /api/auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     description: Creates a new user account, sends email verification link, and returns authentication token in cookie.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - email
+ *               - password
+ *               - phone
+ *               - first_name
+ *               - last_name
+ *               - role
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: MySecurePassword123
+ *               phone:
+ *                 type: string
+ *                 example: "9876543210"
+ *               first_name:
+ *                 type: string
+ *                 example: John
+ *               last_name:
+ *                 type: string
+ *                 example: Doe
+ *               role:
+ *                 type: string
+ *                 enum: [ADMIN, USER]
+ *                 example: USER
+ *                 description: Defaults to USER if not ADMIN
+ *     responses:
+ *       201:
+ *         description: Signup successful, verification email sent
+ *         headers:
+ *           Set-Cookie:
+ *             description: Authentication token stored in cookie
+ *             schema:
+ *               type: string
+ *               example: token=abc123; HttpOnly; Path=/;
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Signup successful. Please verify your email.
+ *       400:
+ *         description: Validation error or user already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     validationError:
+ *                       value: All fields are required
+ *                     userExists:
+ *                       value: User already exists
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server error
+ */
 export const signup = async (req: Request, res: Response) => {
   try {
     const { username, email, password, phone, first_name, last_name, role } =
@@ -92,12 +184,14 @@ export const signup = async (req: Request, res: Response) => {
   }
 };
 
+// verify email
+
 /**
  * @swagger
- * /api/auth/signup:
+ * /api/auth/verify-email:
  *   post:
- *     summary: Register a new user
- *     description: Creates a new user account and returns authentication token in cookie
+ *     summary: Verify user email
+ *     description: Verifies a user's email using the verification token sent via email.
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -106,63 +200,21 @@ export const signup = async (req: Request, res: Response) => {
  *           schema:
  *             type: object
  *             required:
- *               - username
- *               - email
- *               - password
- *               - phone
- *               - first_name
- *               - last_name
- *               - role
+ *               - token
  *             properties:
- *               username:
+ *               token:
  *                 type: string
- *                 example: abc
- *               email:
- *                 type: string
- *                 format: email
- *                 example: abc@example.com
- *               password:
- *                 type: string
- *                 format: password
- *                 example: MySecurePassword123
- *               phone:
- *                 type: string
- *                 example: "9876543210"
- *               first_name:
- *                 type: string
- *                 example: abc
- *               last_name:
- *                 type: string
- *                 example: xyz
- *               role:
- *                 type: string
- *                 enum: [ADMIN, USER]
- *                 example: USER
+ *                 example: "a1b2c3d4e5f6..."
  *     responses:
  *       200:
- *         description: User registered successfully and token returned
+ *         description: Email verified successfully
  *         content:
- *           application/json:
+ *           text/plain:
  *             schema:
- *               type: object
- *               properties:
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: integer
- *                       example: 1
- *                     username:
- *                       type: string
- *                       example: abc
- *                     email:
- *                       type: string
- *                       example: abc@example.com
- *                     role:
- *                       type: string
- *                       example: USER
+ *               type: string
+ *               example: Email verified successfully ✅
  *       400:
- *         description: Validation error or user already exists
+ *         description: Invalid or expired verification token
  *         content:
  *           application/json:
  *             schema:
@@ -170,11 +222,18 @@ export const signup = async (req: Request, res: Response) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: User already exists
+ *                   example: Unverified or expired token
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server error
  */
-
 export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
@@ -211,61 +270,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
   }
 };
 
-export const signin = async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      logger.warn("Signin validation failed", { email });
-
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
-
-    const user = await User.scope("withPassword").findOne({ where: { email } });
-
-    if (!user) {
-      logger.warn("Signin failed - user not found", { email });
-
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const hashedPassword = user.getDataValue("password");
-
-    if (!hashedPassword) {
-      logger.error("Password missing in DB", { userId: user.id });
-
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    const isMatch = await bcrypt.compare(password, hashedPassword);
-
-    if (!isMatch) {
-      logger.warn("Signin failed - wrong password", {
-        userId: user.id,
-      });
-
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    logger.info("User logged in successfully", {
-      userId: user.id,
-      email: user.email,
-    });
-
-    return sendTokenResponse(user, res);
-  } catch (error: any) {
-    logger.error("Signin error", {
-      message: error.message,
-      stack: error.stack,
-    });
-
-    return res.status(500).json({
-      message: "Internal Server error",
-    });
-  }
-};
+// signin
 
 /**
  * @swagger
@@ -334,48 +339,63 @@ export const signin = async (req: Request, res: Response) => {
  *       500:
  *         description: Internal server error
  */
-
-export const logout = async (req: Request, res: Response) => {
+export const signin = async (req: Request, res: Response) => {
   try {
-    const token = req.cookies.token;
+    const { email, password } = req.body;
 
-    if (!token) {
-      logger.warn("Logout attempted without token");
+    if (!email || !password) {
+      logger.warn("Signin validation failed", { email });
 
-      return res.status(400).json({ message: "No token found" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
-      id: number;
-      role: string;
-    };
+    const user = await User.scope("withPassword").findOne({ where: { email } });
 
-    res.cookie("token", "", {
-      httpOnly: true,
-      expires: new Date(0),
+    if (!user) {
+      logger.warn("Signin failed - user not found", { email });
+
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const hashedPassword = user.getDataValue("password");
+
+    if (!hashedPassword) {
+      logger.error("Password missing in DB", { userId: user.id });
+
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (!isMatch) {
+      logger.warn("Signin failed - wrong password", {
+        userId: user.id,
+      });
+
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    logger.info("User logged in successfully", {
+      userId: user.id,
+      email: user.email,
     });
 
-    logger.info("User logged out", {
-      userId: decoded.id,
-      role: decoded.role,
-    });
-
-    return res.status(200).json({
-      message: `Logged out successfully`,
-      userId: decoded.id,
-      role: decoded.role,
-    });
+    return sendTokenResponse(user, res);
   } catch (error: any) {
-    logger.error("Logout error", {
+    logger.error("Signin error", {
       message: error.message,
       stack: error.stack,
     });
 
     return res.status(500).json({
-      message: "Internal server error",
+      message: "Internal Server error",
     });
   }
 };
+
+// logout
 
 /**
  * @swagger
@@ -422,7 +442,122 @@ export const logout = async (req: Request, res: Response) => {
  *       500:
  *         description: Internal server error
  */
+export const logout = async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies.token;
 
+    if (!token) {
+      logger.warn("Logout attempted without token");
+
+      return res.status(400).json({ message: "No token found" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      id: number;
+      role: string;
+    };
+
+    res.cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+
+    logger.info("User logged out", {
+      userId: decoded.id,
+      role: decoded.role,
+    });
+
+    return res.status(200).json({
+      message: `Logged out successfully`,
+      userId: decoded.id,
+      role: decoded.role,
+    });
+  } catch (error: any) {
+    logger.error("Logout error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+// update password
+
+/**
+ * @swagger
+ * /api/auth/update-password:
+ *   put:
+ *     summary: Update user password
+ *     description: Allows an authenticated user to update their password by providing the current password.
+ *     tags:
+ *       - Auth
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: oldPassword123
+ *               newPassword:
+ *                 type: string
+ *                 example: newSecurePassword456
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password updated successfully
+ *       400:
+ *         description: Bad request (missing fields or incorrect current password)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: fields are required
+ *                     wrongPassword:
+ *                       value: Current password is incorrect
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server error
+ */
 export const updatePassword = async (req: Request, res: Response) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -472,6 +607,70 @@ export const updatePassword = async (req: Request, res: Response) => {
 };
 
 // Request password reset
+
+/**
+ * @swagger
+ * /api/auth/request-password-reset:
+ *   post:
+ *     summary: Request password reset
+ *     description: Sends a password reset link to the user's email if the account exists.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *             required:
+ *               - email
+ *     responses:
+ *       200:
+ *         description: Reset link sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Reset link sent to your email
+ *       400:
+ *         description: Missing email field
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: email field is required
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error or mail failure
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Something went wrong
+ */
 export const requestPasswordReset = async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
@@ -526,6 +725,63 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
 };
 
 // reset password
+
+/**
+ * @swagger
+ * /api/auth/reset-password:
+ *   post:
+ *     summary: Reset password
+ *     description: Resets the user's password using a valid reset token.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 example: "f3a1c9d8e7b6a5..."
+ *               newPassword:
+ *                 type: string
+ *                 example: "newSecurePassword123"
+ *             required:
+ *               - token
+ *               - newPassword
+ *     responses:
+ *       200:
+ *         description: Password reset successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Password reset successful
+ *       400:
+ *         description: Invalid or expired token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid or expired token
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal Server error
+ */
 export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, newPassword } = req.body;

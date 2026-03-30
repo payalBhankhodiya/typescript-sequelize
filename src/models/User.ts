@@ -155,27 +155,61 @@ export default User;
  *           example: 1
  *         username:
  *           type: string
- *           example: abc
+ *           example: johndoe
  *         email:
  *           type: string
  *           format: email
- *           example: abc@example.com
+ *           example: johndoe@example.com
+ *         password:
+ *           type: string
+ *           example: secret123
+ *           description: Hashed password (excluded in most responses)
  *         phone:
  *           type: string
  *           example: "9876543210"
  *         first_name:
  *           type: string
- *           example: abc
+ *           example: John
  *         last_name:
  *           type: string
- *           example: xyz
+ *           example: Doe
  *         role:
  *           type: string
  *           enum: [USER, ADMIN]
  *           example: USER
+ *         resetToken:
+ *           type: string
+ *           nullable: true
+ *           example: "abc123token"
+ *         resetTokenExpiry:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           example: "2026-04-01T10:00:00Z"
+ *         verificationToken:
+ *           type: string
+ *           nullable: true
+ *           example: "verify123token"
+ *         verificationTokenExpiry:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           example: "2026-04-01T10:00:00Z"
+ *         isVerified:
+ *           type: boolean
+ *           example: false
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2026-03-30T12:00:00Z"
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           example: "2026-03-30T12:00:00Z"
  *       required:
  *         - username
  *         - email
+ *         - password
  *         - phone
  *         - first_name
  *         - last_name

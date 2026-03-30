@@ -15,7 +15,7 @@ import {
 const router = Router();
 
 router.post("/signup", validateRequest(registerSchema), signup);
-router.post("/verify-user", verifyEmail);
+router.post("/verify-email", verifyEmail);
 
 router.post("/signin", validateRequest(loginSchema), signin);
 
@@ -23,7 +23,7 @@ router.post("/logout", validateRequest(logoutSchema), logout);
 
 router.post("/update-password", validateRequest(updatePasswordSchema), updatePassword);
 
-router.post("/request-reset", validateRequest(requestPasswordResetSchema), requestPasswordReset);
+router.post("/request-password-reset", validateRequest(requestPasswordResetSchema), requestPasswordReset);
 router.post("/reset-password", validateRequest(resetPasswordSchema), resetPassword);
 
 

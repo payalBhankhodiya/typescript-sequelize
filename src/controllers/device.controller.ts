@@ -9,7 +9,98 @@ import DeviceStatus from "../models/Device_status.js";
 import { Op, Sequelize } from "sequelize";
 import Site from "../models/Site.js";
 
+/**
+ * @swagger
+ * tags:
+ *   name: Device
+ *   description: Logger Device management APIs
+ */
+
 // logger device
+
+/**
+ * @swagger
+ * /api/devices/logger:
+ *   post:
+ *     summary: Store logger device data
+ *     description: Accepts data from logger devices, stores it, and updates device status.
+ *     tags: [Device]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - device_id
+ *             properties:
+ *               device_id:
+ *                 type: string
+ *                 example: "DEV12345"
+ *               device_uuid:
+ *                 type: string
+ *                 example: "uuid-1234-5678"
+ *               raw_data:
+ *                 type: object
+ *                 example: { "temp": 25.5, "humidity": 60 }
+ *               data:
+ *                 type: object
+ *                 example: { "temperature": 25.5, "humidity": 60 }
+ *               site_id:
+ *                 type: integer
+ *                 example: 1
+ *     responses:
+ *       201:
+ *         description: Logger device data stored successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Logger device data stored successfully
+ *                 data:
+ *                   type: object
+ *                   description: Stored device data record
+ *       400:
+ *         description: Bad request (missing device_id or invalid device type)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingDeviceId:
+ *                       value: device_id is required
+ *                     invalidType:
+ *                       value: Invalid device type Only logger devices allowed
+ *       404:
+ *         description: Device not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Device not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ *                 error:
+ *                   type: string
+ *                   example: Something went wrong
+ */
 export const loggerDevice = handleRequest(
   async (req: Request, res: Response) => {
     const { device_id, device_uuid, raw_data, data, site_id } = req.body;
@@ -131,6 +222,67 @@ export const liveDeviceData = handleRequest(
 );
 
 // unbind device
+
+/**
+ * @swagger
+ * /api/devices/unbind/{device_uuid}:
+ *   patch:
+ *     summary: Unbind a device from a site
+ *     description: Removes a device from its associated site and updates its binding status.
+ *     tags: [Device]
+ *     parameters:
+ *       - in: path
+ *         name: device_uuid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Unique identifier of the device
+ *         example: "uuid-1234-5678"
+ *     responses:
+ *       200:
+ *         description: Device unbound successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Device unbind successfully
+ *       400:
+ *         description: Device already unbound
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Device is already unbind
+ *       404:
+ *         description: Device not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Device not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ *                 error:
+ *                   type: string
+ *                   example: Something went wrong
+ */
 export const unbindDevice = handleRequest(
   async (req: Request, res: Response) => {
     const { device_uuid } = req.params;
@@ -174,6 +326,81 @@ export const unbindDevice = handleRequest(
 );
 
 // replace device
+
+/**
+ * @swagger
+ * /api/devices/replace:
+ *   post:
+ *     summary: Replace a device
+ *     description: Replaces an old bound device with a new unbound device within the same site using a transaction.
+ *     tags: [Device]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - old_device_uuid
+ *               - new_device_uuid
+ *             properties:
+ *               old_device_uuid:
+ *                 type: string
+ *                 example: "old-uuid-1234"
+ *               new_device_uuid:
+ *                 type: string
+ *                 example: "new-uuid-5678"
+ *     responses:
+ *       200:
+ *         description: Device replaced successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Device replaced successfully
+ *       400:
+ *         description: Validation or business logic error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   examples:
+ *                     missingFields:
+ *                       value: Both old_device_uuid and new_device_uuid are required
+ *                     oldNotBinded:
+ *                       value: Old device is not binded
+ *                     newAlreadyBinded:
+ *                       value: New device is already binded
+ *       404:
+ *         description: Device not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Device not found
+ *       500:
+ *         description: Internal server error (transaction failure)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ *                 error:
+ *                   type: string
+ *                   example: Something went wrong
+ */
 export const replaceDevice = handleRequest(
   async (req: Request, res: Response) => {
     const { old_device_uuid, new_device_uuid } = req.body;

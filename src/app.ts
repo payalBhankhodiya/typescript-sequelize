@@ -42,7 +42,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/device", deviceRoutes);
+app.use("/api/devices", deviceRoutes);
 
 app.use((req: Request, res: Response) => {
   res.status(404).json({
