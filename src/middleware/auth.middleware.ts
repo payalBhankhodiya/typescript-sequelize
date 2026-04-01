@@ -12,21 +12,19 @@ export const protect = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.cookies.token;
+    const accessToken = req.cookies.accessToken;
 
-    if (!token) {
-      return res.status(401).json({ message: "Not authorized" });
+    if (!accessToken) {
+      return res.status(401).json({ message: "Not have access token" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.JWT_SECRET as string,
+    ) as {
       id: number;
       role: string;
     };
-    console.log(decoded)
-    console.log(decoded.id)
-    console.log(decoded.role)
-
-
 
     const user = await User.findByPk(decoded.id);
 
@@ -36,8 +34,10 @@ export const protect = async (
 
     req.user = user.toJSON();
     next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+  } catch (error: any) {
+    return res
+      .status(401)
+      .json({ message: "Invalid or expired token", error: error.message });
   }
 };
 export const protectAdmin = async (
@@ -46,13 +46,16 @@ export const protectAdmin = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.cookies.token;
+    const accessToken = req.cookies.accessToken;
 
-    if (!token) {
-      return res.status(401).json({ message: "Not authorized" });
+    if (!accessToken) {
+      return res.status(401).json({ message: "Not have access token" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+    const decoded = jwt.verify(
+      accessToken,
+      process.env.JWT_SECRET as string,
+    ) as {
       id: number;
       role: string;
     };
@@ -68,7 +71,9 @@ export const protectAdmin = async (
     }
     req.user = userObj;
     next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+  } catch (error: any) {
+    return res
+      .status(401)
+      .json({ message: "Invalid or expired token", error: error.message });
   }
 };
