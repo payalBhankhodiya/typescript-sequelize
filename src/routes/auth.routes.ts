@@ -13,21 +13,20 @@ import validateRequest from "../middleware/validateRequest.js";
 import {
   registerSchema,
   loginSchema,
-  logoutSchema,
   resetPasswordSchema,
   requestPasswordResetSchema,
   updatePasswordSchema,
-  refreshAccessTokenSchema,
+  verifyEmailSchema,
 } from "../validation/user.js";
 
 const router = Router();
 
 router.post("/signup", validateRequest(registerSchema), signup);
-router.post("/verify-email", verifyEmail);
+router.post("/verify-email", validateRequest(verifyEmailSchema), verifyEmail);
 
 router.post("/signin", validateRequest(loginSchema), signin);
 
-router.post("/logout", validateRequest(logoutSchema), logout);
+router.post("/logout", logout);
 
 router.post(
   "/update-password",
@@ -46,10 +45,6 @@ router.post(
   resetPassword,
 );
 
-router.post(
-  "/refresh-token",
-  validateRequest(refreshAccessTokenSchema),
-  refreshAccessToken,
-);
+router.post("/refresh-token", refreshAccessToken);
 
 export default router;

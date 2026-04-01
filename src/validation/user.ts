@@ -10,16 +10,15 @@ export const registerSchema = Joi.object({
   role: Joi.string().valid("ADMIN", "USER").default("USER").required(),
 });
 
+export const verifyEmailSchema = Joi.object({
+  token: Joi.string().required().messages({
+    "string.base": "Token must be a string",
+  }),
+});
+
 export const loginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
-});
-
-export const logoutSchema = Joi.object({
-  token: Joi.string().required().messages({
-    "string.base": "Token must be a string",
-    "any.required": "Token is required for logout",
-  }),
 });
 
 export const updatePasswordSchema = Joi.object({
@@ -34,11 +33,5 @@ export const resetPasswordSchema = Joi.object({
   newPassword: Joi.string().min(8).required(),
   token: Joi.string().required().messages({
     "string.base": "Token must be a string",
-  }),
-});
-
-export const refreshAccessTokenSchema = Joi.object({
-  refreshToken: Joi.string().required().messages({
-    "string.base": "Refresh token must be a string",
   }),
 });
