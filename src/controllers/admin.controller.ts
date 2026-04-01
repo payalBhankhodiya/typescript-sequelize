@@ -12,6 +12,8 @@ import {
   findOrFail,
 } from "../services/controllerService.js";
 import { getUsers } from "../services/userService.js";
+import redisClient from "../config/redis.js";
+import { CACHE_KEYS } from "../utils/cacheKeys.js";
 
 /**
  * @swagger
@@ -373,14 +375,8 @@ export const getAllUsers = handleRequest(async (_: Request, res: Response) => {
   const users = await getUsers();
   res.status(200).json({ data: users });
 });
-// export const getAllUsers = async (req: Request, res: Response) => {
-//   try {
-//     const users = await getUsers();
-//     res.json(users);
-//   } catch (error: any) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+
+
 // CREATE USER
 
 /**
@@ -441,7 +437,12 @@ export const createUser = handleRequest(async (req: Request, res: Response) => {
     last_name: req.body.last_name,
     role: req.body.role,
   });
-  res.status(201).json({ data: user });
+
+ 
+  await redisClient.del(CACHE_KEYS.USERS_ALL);
+  
+  const { password, ...userData } = user.toJSON();
+  res.status(201).json({ data: userData });
 });
 
 // GET USER BY ID
@@ -478,11 +479,26 @@ export const createUser = handleRequest(async (req: Request, res: Response) => {
 export const getUserById = handleRequest(
   async (req: Request, res: Response) => {
     const id = validateId(req.params.id);
+
+    const cached = await redisClient.get(CACHE_KEYS.USER_BY_ID(id));
+    if (cached) {
+      console.log("Cache HIT for user:", id);
+      return res.status(200).json({ data: JSON.parse(cached) });
+    }
+
+    console.log("Cache MISS for user:", id);
+
     const user = await findOrFail(User, id, "User not found");
+
+    await redisClient.set(CACHE_KEYS.USER_BY_ID(id), JSON.stringify(user), {
+      EX: 15 * 60,
+    });
 
     res.status(200).json({ data: user });
   },
 );
+
+
 
 // UPDATE USER
 
@@ -552,11 +568,16 @@ export const updateUser = handleRequest(async (req: Request, res: Response) => {
 
   await user.update(req.body);
 
+  await redisClient.del(CACHE_KEYS.USERS_ALL);
+  await redisClient.del(CACHE_KEYS.USER_BY_ID(id));
+
+
   res.status(200).json({
     message: "User updated successfully",
     data: user,
   });
 });
+
 
 // DELETE USER
 
@@ -596,10 +617,14 @@ export const deleteUser = handleRequest(async (req: Request, res: Response) => {
 
   await user.destroy();
 
+  await redisClient.del(CACHE_KEYS.USERS_ALL);
+  await redisClient.del(CACHE_KEYS.USER_BY_ID(id));
+
   res.json({
     message: "User deleted successfully",
   });
 });
+
 
 /**
  * @swagger

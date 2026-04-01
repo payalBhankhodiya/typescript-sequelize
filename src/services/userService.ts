@@ -4,6 +4,7 @@ import redisClient from "../config/redis.js";
 const CACHE_KEY = "users:all";
 
 export const getUsers = async () => {
+
   const cached = await redisClient.get(CACHE_KEY);
 
   if (cached) {
@@ -16,7 +17,7 @@ export const getUsers = async () => {
   const users = await User.findAll();
 
   await redisClient.set(CACHE_KEY, JSON.stringify(users), {
-    EX: 60, // 60 sec TTL
+    EX: 15 * 60, // 15 min TTL
   });
 
   return users;
