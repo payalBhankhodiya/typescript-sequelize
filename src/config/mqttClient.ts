@@ -1,6 +1,7 @@
 import mqtt from "mqtt";
-import MqttMessage from "../models/MqttMessage.js";
 import DeviceStatus from "../models/Device_status.js";
+import LoggerDeviceData from "../models/Logger_device_data.js";
+
 
 const client = mqtt.connect(process.env.MQTT_URL || "mqtt://localhost:1883", {
   reconnectPeriod: 3000,
@@ -25,28 +26,38 @@ client.on("message", async (topic, payload, packet) => {
 
   try {
     parsedPayload = JSON.parse(rawPayload);
-  } catch {
-    parsedPayload = null;
+  } catch (err) {
     console.error("Invalid JSON, skipping message");
+    return;
   }
 
-  console.log(`${topic}`, parsedPayload || rawPayload);
+  console.log(`Topic: ${topic}`, parsedPayload);
 
   try {
-    await MqttMessage.create({
-      topic,
+    
+    if (!parsedPayload.device_uuid || !parsedPayload.device_id) {
+      console.error("Missing device_uuid or device_id");
+      return;
+    }
+
+    let siteId = parsedPayload.site_id;
+
+  await LoggerDeviceData.create({
+      device_uuid: parsedPayload.device_uuid,
       device_id: parsedPayload.device_id,
-      payload: parsedPayload,
-      raw_payload: rawPayload,
-      qos: packet.qos ?? 0,
-      received_at: new Date(),
+      site_id: siteId,
+      raw_data: rawPayload,
+      data: parsedPayload,
     });
+
+    console.log("Data saved to logger_device_data");
+
   } catch (err) {
-    console.error("Error saving message:", err);
+    console.error("Error saving LoggerDeviceData:", err);
   }
 
-  if (parsedPayload?.device_uuid) {
-    try {
+  try {
+    if (parsedPayload.device_uuid) {
       await DeviceStatus.upsert({
         device_uuid: parsedPayload.device_uuid,
         device_id: parsedPayload.device_id ?? null,
@@ -54,9 +65,11 @@ client.on("message", async (topic, payload, packet) => {
         device_last_seen: new Date(),
         device_last_data: parsedPayload,
       });
-    } catch (err) {
-      console.error("DeviceStatus upsert failed:", err);
+
+      console.log("DeviceStatus updated");
     }
+  } catch (err) {
+    console.error("DeviceStatus upsert failed:", err);
   }
 });
 
@@ -69,3 +82,5 @@ client.on("error", (err) => {
 });
 
 export default client;
+
+
