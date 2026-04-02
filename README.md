@@ -34,3 +34,5 @@ npx sequelize-cli init
 npm i crypto
 npm i nodemailer 
 npm install --save-dev @types/nodemailer
+npm install mqtt sequelize pg pg-hstore
+npm install -D typescript @types/node

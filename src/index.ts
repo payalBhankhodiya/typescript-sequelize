@@ -2,6 +2,7 @@ import app from "./app.js";
 import sequelize from "./db/connection.js";
 import logger from "./config/logger.js";
 import { connectRedis } from "./config/redis.js";
+import "./config/mqttClient.js";
 
 import dotenv from "dotenv";
 dotenv.config();
