@@ -16,7 +16,7 @@ import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import deviceRoutes from "./routes/device.routes.js";
-import { protect } from "./middleware/auth.middleware.js";
+import { protect, protectAdmin } from "./middleware/auth.middleware.js";
 
 const app = express();
 
@@ -45,8 +45,8 @@ app.use(morgan("combined", { stream }));
 // swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
-app.use("/api/admin",protect, userRateLimiter, adminRoutes);
-app.use("/api/user", userRateLimiter, userRoutes);
+app.use("/api/admin",protectAdmin, userRateLimiter, adminRoutes);
+app.use("/api/user", protect, userRateLimiter, userRoutes);
 app.use("/api/devices", deviceRoutes);
 
 app.use((req: Request, res: Response) => {

@@ -10,7 +10,9 @@ import {
   validateId,
   findOrFail,
   withTransaction,
+  findOwnedOrFail,
 } from "../services/controllerService.js";
+import { Op, Sequelize } from "sequelize";
 
 /**
  * @swagger
@@ -99,7 +101,15 @@ export const createSite = handleRequest(async (req: Request, res: Response) => {
 
 export const getAllSites = handleRequest(
   async (req: Request, res: Response) => {
-    const sites = await Site.findAll();
+    const userId = (req as any).user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const sites = await Site.findAll({
+      where: { site_owner: userId },
+    });
     res.status(200).json({ data: sites });
   },
 );
@@ -139,7 +149,9 @@ export const getSiteById = handleRequest(
   async (req: Request, res: Response) => {
     const id = validateId(req.params.id);
 
-    const site = await findOrFail(Site, id, "Site not found");
+    const userId = (req as any).user?.id;
+
+    const site = await findOwnedOrFail(Site, { id }, userId, "Site not found");
 
     res.status(200).json({ data: site });
   },
@@ -207,7 +219,9 @@ export const getSiteById = handleRequest(
 export const updateSite = handleRequest(async (req: Request, res: Response) => {
   const id = validateId(req.params.id);
 
-  const site = await findOrFail(Site, id, "Site not found");
+  const userId = (req as any).user?.id;
+
+  const site = await findOwnedOrFail(Site, { id }, userId, "Site not found");
 
   await site.update(req.body);
 
@@ -252,7 +266,9 @@ export const updateSite = handleRequest(async (req: Request, res: Response) => {
 export const deleteSite = handleRequest(async (req: Request, res: Response) => {
   const id = validateId(req.params.id);
 
-  const site = await findOrFail(Site, id, "Site not found");
+  const userId = (req as any).user?.id;
+
+  const site = await findOwnedOrFail(Site, { id }, userId, "Site not found");
 
   await site.destroy();
 
@@ -292,7 +308,17 @@ export const deleteSite = handleRequest(async (req: Request, res: Response) => {
 
 export const getAllDeviceData = handleRequest(
   async (req: Request, res: Response) => {
-    const data = await LoggerDeviceData.findAll();
+    const userId = (req as any).user?.id;
+
+    const data = await LoggerDeviceData.findAll({
+      where: {
+        site_id: {
+          [Op.in]: Sequelize.literal(`(
+        SELECT id FROM Sites WHERE site_owner = ${userId}
+      )`),
+        },
+      },
+    });
     res.status(200).json({ data });
   },
 );
@@ -616,10 +642,7 @@ export const findDevice = handleRequest(async (req: Request, res: Response) => {
     }
   });
 
-  return res
-    .status(200)
-    .json({
-      message: "Device data processed successfully",
-    })
-
+  return res.status(200).json({
+    message: "Device data processed successfully",
+  });
 });

@@ -28,7 +28,27 @@ export const findOrFail = async (model: any, id: number, message: string) => {
     error.status = 404;
     throw error;
   }
+  return record;
+};
 
+export const findOwnedOrFail = async (
+  model: any,
+  where: any,
+  userId: number,
+  message: string
+) => {
+  const record = await model.findOne({
+    where: {
+      ...where,
+      site_owner: userId, 
+    },
+  });
+
+  if (!record) {
+    const error: any = new Error(message);
+    error.status = 404;
+    throw error;
+  }
   return record;
 };
 

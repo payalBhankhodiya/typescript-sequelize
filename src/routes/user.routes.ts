@@ -13,41 +13,27 @@ import {
   updateSite,
 } from "../controllers/user.controller.js";
 
-import { protect } from "../middleware/auth.middleware.js";
-
 const router = Router();
 
 // Site
-router.get("/sites", protect, getAllSites);
-router.get("/sites/:id", protect, getSiteById);
-router.post("/sites", protect, createSite);
-router.put("/sites/:id", protect, updateSite);
-router.delete("/sites/:id", protect, deleteSite);
+router.get("/sites", getAllSites);
+router.get("/sites/:id", getSiteById);
+router.post("/sites", createSite);
+router.put("/sites/:id", updateSite);
+router.delete("/sites/:id", deleteSite);
 
 // Device Data
-router.get("/device/data", protect, getAllDeviceData);
-router.get("/device/data/:id", protect, getDeviceDataById);
+router.get("/device/data", getAllDeviceData);
+router.get("/device/data/:id", getDeviceDataById);
 
 // Device Status
-router.get("/device/status", protect, getAllDeviceStatus);
-router.get("/device/status/:id", protect, getDeviceStatusById);
+router.get("/device/status", getAllDeviceStatus);
+router.get("/device/status/:id", getDeviceStatusById);
 
 // bind device
-router.post("/binds/device", protect, bindDevice);
+router.post("/binds/device", bindDevice);
 
 // find device
-router.post("/find/device", protect, findDevice);
+router.post("/find/device", findDevice);
 
 export default router;
-
-
-
-
-
-
-
-
-
-
-
-
