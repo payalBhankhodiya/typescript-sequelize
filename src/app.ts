@@ -9,11 +9,14 @@ import morgan from "morgan";
 import logger from "./config/logger.js";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger.js";
+import { ipRateLimiter } from "./middleware/ipRateLimiter.js";
+import { userRateLimiter } from "./middleware/userRateLimiter.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import deviceRoutes from "./routes/device.routes.js";
+import { protect } from "./middleware/auth.middleware.js";
 
 const app = express();
 
@@ -23,6 +26,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(ipRateLimiter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -40,8 +45,8 @@ app.use(morgan("combined", { stream }));
 // swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/admin",protect, userRateLimiter, adminRoutes);
+app.use("/api/user", userRateLimiter, userRoutes);
 app.use("/api/devices", deviceRoutes);
 
 app.use((req: Request, res: Response) => {
