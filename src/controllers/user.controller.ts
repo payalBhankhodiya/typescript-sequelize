@@ -14,6 +14,7 @@ import {
 } from "../services/controllerService.js";
 import { Op, Sequelize } from "sequelize";
 
+
 /**
  * @swagger
  * tags:
@@ -35,6 +36,11 @@ import { Op, Sequelize } from "sequelize";
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - site_id
+ *               - site_address
+ *               - site_type
+ *               - site_owner
  *             properties:
  *               site_id:
  *                 type: string
@@ -45,9 +51,6 @@ import { Op, Sequelize } from "sequelize";
  *               site_type:
  *                 type: string
  *                 example: xyz
- *               site_devices:
- *                 type: array
- *                 example: [device1, device2]
  *               site_owner:
  *                 type: integer
  *                 example: 1
@@ -81,7 +84,7 @@ export const createSite = handleRequest(async (req: Request, res: Response) => {
  * @swagger
  * /api/user/sites:
  *   get:
- *     summary: Get all sites
+ *     summary: Get all sites for the logged-in user
  *     tags: [User/Sites]
  *     responses:
  *       200:
@@ -95,6 +98,16 @@ export const createSite = handleRequest(async (req: Request, res: Response) => {
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/Site'
+ *       401:
+ *         description: Unauthorized - user not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
  *       500:
  *         description: Internal server error
  */
@@ -120,7 +133,7 @@ export const getAllSites = handleRequest(
  * @swagger
  * /api/user/sites/{id}:
  *   get:
- *     summary: Get site by ID
+ *     summary: Get a site by ID (only if owned by the logged-in user)
  *     tags: [User/Sites]
  *     parameters:
  *       - in: path
@@ -139,8 +152,18 @@ export const getAllSites = handleRequest(
  *               properties:
  *                 data:
  *                   $ref: '#/components/schemas/Site'
+ *       401:
+ *         description: Unauthorized - user not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
  *       404:
- *         description: Site not found
+ *         description: Site not found or not owned by user
  *       500:
  *         description: Internal server error
  */
@@ -150,6 +173,9 @@ export const getSiteById = handleRequest(
     const id = validateId(req.params.id);
 
     const userId = (req as any).user?.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const site = await findOwnedOrFail(Site, { id }, userId, "Site not found");
 
@@ -163,7 +189,7 @@ export const getSiteById = handleRequest(
  * @swagger
  * /api/user/sites/{id}:
  *   put:
- *     summary: Update site
+ *     summary: Update a site (only if owned by the logged-in user)
  *     tags: [User/Sites]
  *     parameters:
  *       - in: path
@@ -188,15 +214,6 @@ export const getSiteById = handleRequest(
  *               site_type:
  *                 type: string
  *                 example: xyz
- *               site_devices:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: uuid
- *                 example: ["550e8400-e29b-41d4-a716-446655440001","550e8400-e29b-41d4-a716-446655440002"]
- *               site_owner:
- *                 type: integer
- *                 example: 1
  *     responses:
  *       200:
  *         description: Site updated successfully
@@ -210,20 +227,34 @@ export const getSiteById = handleRequest(
  *                   example: Site updated successfully
  *                 data:
  *                   $ref: '#/components/schemas/Site'
+ *       401:
+ *         description: Unauthorized - user not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
  *       404:
- *         description: Site not found
+ *         description: Site not found or not owned by user
  *       500:
  *         description: Internal server error
  */
 
 export const updateSite = handleRequest(async (req: Request, res: Response) => {
   const id = validateId(req.params.id);
+  const { site_id, site_address, site_type } = req.body;
 
   const userId = (req as any).user?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
   const site = await findOwnedOrFail(Site, { id }, userId, "Site not found");
 
-  await site.update(req.body);
+  await site.update({ site_id, site_address, site_type });
 
   res.status(200).json({
     message: "Site updated successfully",
@@ -237,7 +268,7 @@ export const updateSite = handleRequest(async (req: Request, res: Response) => {
  * @swagger
  * /api/user/sites/{id}:
  *   delete:
- *     summary: Delete site
+ *     summary: Delete a site (only if owned by the logged-in user)
  *     tags: [User/Sites]
  *     parameters:
  *       - in: path
@@ -257,8 +288,18 @@ export const updateSite = handleRequest(async (req: Request, res: Response) => {
  *                 message:
  *                   type: string
  *                   example: Site deleted successfully
+ *       401:
+ *         description: Unauthorized - user not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
  *       404:
- *         description: Site not found
+ *         description: Site not found or not owned by user
  *       500:
  *         description: Internal server error
  */
@@ -267,6 +308,9 @@ export const deleteSite = handleRequest(async (req: Request, res: Response) => {
   const id = validateId(req.params.id);
 
   const userId = (req as any).user?.id;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
   const site = await findOwnedOrFail(Site, { id }, userId, "Site not found");
 
@@ -288,7 +332,7 @@ export const deleteSite = handleRequest(async (req: Request, res: Response) => {
  * @swagger
  * /api/user/device/data:
  *   get:
- *     summary: Get all device data
+ *     summary: Get all device data for the logged-in user's sites
  *     tags: [User/Device_data]
  *     responses:
  *       200:
@@ -302,6 +346,18 @@ export const deleteSite = handleRequest(async (req: Request, res: Response) => {
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/LoggerDeviceData'
+ *       401:
+ *         description: Unauthorized - user not authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Unauthorized
+ *       404:
+ *         description: Site not found or not owned by user
  *       500:
  *         description: Internal server error
  */
@@ -309,6 +365,10 @@ export const deleteSite = handleRequest(async (req: Request, res: Response) => {
 export const getAllDeviceData = handleRequest(
   async (req: Request, res: Response) => {
     const userId = (req as any).user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const data = await LoggerDeviceData.findAll({
       where: {

@@ -2,7 +2,6 @@ import mqtt from "mqtt";
 import DeviceStatus from "../models/Device_status.js";
 import LoggerDeviceData from "../models/Logger_device_data.js";
 
-
 const client = mqtt.connect(process.env.MQTT_URL || "mqtt://localhost:1883", {
   reconnectPeriod: 3000,
 });
@@ -26,7 +25,7 @@ client.on("message", async (topic, payload, packet) => {
 
   try {
     parsedPayload = JSON.parse(rawPayload);
-  } catch (err) {
+  } catch {
     console.error("Invalid JSON, skipping message");
     return;
   }
@@ -34,7 +33,6 @@ client.on("message", async (topic, payload, packet) => {
   console.log(`Topic: ${topic}`, parsedPayload);
 
   try {
-    
     if (!parsedPayload.device_uuid || !parsedPayload.device_id) {
       console.error("Missing device_uuid or device_id");
       return;
@@ -42,7 +40,7 @@ client.on("message", async (topic, payload, packet) => {
 
     let siteId = parsedPayload.site_id;
 
-  await LoggerDeviceData.create({
+    await LoggerDeviceData.create({
       device_uuid: parsedPayload.device_uuid,
       device_id: parsedPayload.device_id,
       site_id: siteId,
@@ -51,7 +49,6 @@ client.on("message", async (topic, payload, packet) => {
     });
 
     console.log("Data saved to logger_device_data");
-
   } catch (err) {
     console.error("Error saving LoggerDeviceData:", err);
   }
@@ -82,5 +79,3 @@ client.on("error", (err) => {
 });
 
 export default client;
-
-

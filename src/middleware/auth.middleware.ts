@@ -40,6 +40,7 @@ export const protect = async (
       .json({ message: "Invalid or expired token", error: error.message });
   }
 };
+
 export const protectAdmin = async (
   req: AuthRequest,
   res: Response,
