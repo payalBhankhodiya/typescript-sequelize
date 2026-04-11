@@ -2,6 +2,7 @@ import { TOPIC_PATTERNS } from "./topicPatterns.js";
 import { deviceDataHandler } from "./handlers/deviceData.handler.js";
 
 export const handleMessage = async (topic: string, payload: Buffer) => {
+ 
   const raw = payload.toString();
 
   let parsed;

@@ -11,6 +11,7 @@ export const deviceDataHandler = async (
     return;
   }
 
+
   try {
     await LoggerDeviceData.create({
       device_uuid: data.device_uuid,

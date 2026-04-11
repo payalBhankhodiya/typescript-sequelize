@@ -1,3 +1,3 @@
 export const TOPIC_PATTERNS = {
-  DEVICE_DATA: /^device\/([^/]+)\/data$/,
+  DEVICE_DATA: /^devices\/([^/]+)\/data$/,
 };
